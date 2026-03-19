@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Loader2, Lock, User } from "lucide-react";
@@ -24,7 +24,6 @@ interface LoginFormValues {
 }
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -47,7 +46,7 @@ export default function LoginPage() {
         toast.error("Invalid username or password");
       } else {
         toast.success("Signed in successfully");
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch {
       toast.error("Something went wrong. Please try again.");

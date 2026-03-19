@@ -5,15 +5,17 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public routes: login page and NextAuth API routes
-  const publicPaths = ["/login", "/api/auth"];
+  const publicPaths = ["/login", "/api/auth", "/api/users/seed"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   if (isPublicPath) {
     return NextResponse.next();
   }
 
-  // Check for next-auth session token cookie
+  // Check for auth.js session token cookie (v5 uses "authjs." prefix)
   const token =
+    request.cookies.get("authjs.session-token") ??
+    request.cookies.get("__Secure-authjs.session-token") ??
     request.cookies.get("next-auth.session-token") ??
     request.cookies.get("__Secure-next-auth.session-token");
 
