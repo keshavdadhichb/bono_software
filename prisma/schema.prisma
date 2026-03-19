@@ -1,0 +1,847 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== CORE & SYSTEM ====================
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  passwordHash  String
+  fullName      String
+  email         String?   @unique
+  role          Role      @default(DATA_ENTRY)
+  isActive      Boolean   @default(true)
+  lastLogin     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  DATA_ENTRY
+  VIEWER
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  companyName  String   @unique
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  pincode      String?
+  country      String?  @default("India")
+  gstNo        String?
+  panNo        String?
+  phoneNo      String?
+  email        String?
+  logoUrl      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("companies")
+}
+
+model FinancialYear {
+  id        String   @id @default(cuid())
+  yearCode  String   @unique // e.g., "26-27"
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+
+  @@map("financial_years")
+}
+
+// ==================== MASTER DATA ====================
+
+model Party {
+  id          String    @id @default(cuid())
+  partyCode   String?   @unique
+  partyName   String
+  partyType   String    // Supplier, Customer, Contractor, Transporter, Job Worker, ACCESSORY PROCESS, etc.
+  address1    String?
+  address2    String?
+  address3    String?
+  address4    String?
+  district    String?
+  state       String?
+  pincode     String?
+  phone       String?
+  mobile      String?
+  email       String?
+  gstNo       String?
+  panNo       String?
+  bankName    String?
+  bankAccountNo String?
+  bankIfscCode  String?
+  creditDays  Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  yarnDyeingOutwards      YarnProcessOutward[]
+  yarnDyeingInwards       YarnProcessInward[]
+  yarnPurchaseOrders      YarnPurchaseOrder[]
+  yarnPurchases           YarnPurchase[]
+  yarnSales               YarnSale[]
+  fabricProcessOutwards   FabricProcessOutward[]
+  fabricProcessInwards    FabricProcessInward[]
+  garmentProcessOutwards  GarmentProcessOutward[]
+  garmentProcessInwards   GarmentProcessInward[]
+
+  @@map("parties")
+}
+
+model Store {
+  id            String   @id @default(cuid())
+  storeName     String   @unique
+  storeLocation String?
+  isActive      Boolean  @default(true)
+
+  @@map("stores")
+}
+
+model ProcessMaster {
+  id              String  @id @default(cuid())
+  processName     String  @unique
+  processCategory String  // Yarn, Fabric, Garment, Accessory, Common
+  isActive        Boolean @default(true)
+
+  @@map("processes")
+}
+
+model Uom {
+  id          String  @id @default(cuid())
+  uomCode     String  @unique // Kgs, Nos, Pcs, Rolls, Box, Grs
+  description String?
+
+  @@map("uoms")
+}
+
+model Color {
+  id        String @id @default(cuid())
+  colorCode String? @unique
+  colorName String @unique
+
+  @@map("colors")
+}
+
+model Concern {
+  id          String @id @default(cuid())
+  concernName String @unique
+  isActive    Boolean @default(true)
+
+  @@map("concerns")
+}
+
+model StyleNumber {
+  id             String  @id @default(cuid())
+  styleNo        String  @unique
+  styleReference String?
+  styleType      String?
+  description    String?
+
+  @@map("style_numbers")
+}
+
+model GstTaxSlab {
+  id       String @id @default(cuid())
+  taxName  String @unique
+  cgstRate Float
+  sgstRate Float
+  hsnCode  String?
+
+  @@map("gst_tax_slabs")
+}
+
+// ==================== YARN MODULE ====================
+
+model YarnType {
+  id       String  @id @default(cuid())
+  typeName String  @unique
+  isActive Boolean @default(true)
+
+  @@map("yarn_types")
+}
+
+model YarnCount {
+  id        String  @id @default(cuid())
+  countName String  @unique
+  isActive  Boolean @default(true)
+
+  @@map("yarn_counts")
+}
+
+model YarnMaster {
+  id        String @id @default(cuid())
+  yarnType  String
+  counts    String
+  millName  String?
+  isActive  Boolean @default(true)
+
+  @@unique([yarnType, counts, millName])
+  @@map("yarn_masters")
+}
+
+model YarnStock {
+  id        String  @id @default(cuid())
+  storeId   String
+  lotNo     String
+  styleNo   String?
+  counts    String
+  yarnType  String
+  millName  String?
+  color     String?
+  dyeColor  String?
+  stockKgs  Float   @default(0)
+  noOfBags  Int     @default(0)
+  uom       String  @default("Kgs")
+  rate      Float   @default(0)
+  process   String? // Last process applied
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("yarn_stock")
+}
+
+model YarnPurchaseOrder {
+  id          String   @id @default(cuid())
+  poNo        String   @unique
+  poDate      DateTime
+  partyId     String
+  party       Party    @relation(fields: [partyId], references: [id])
+  storeId     String?
+  narration   String?
+  totalQty    Float    @default(0)
+  totalAmount Float    @default(0)
+  gstAmount   Float    @default(0)
+  netAmount   Float    @default(0)
+  status      String   @default("Open") // Open, Partial, Closed
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items YarnPurchaseOrderItem[]
+
+  @@map("yarn_purchase_orders")
+}
+
+model YarnPurchaseOrderItem {
+  id        String @id @default(cuid())
+  poId      String
+  po        YarnPurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  slNo      Int
+  lotNo     String?
+  styleNo   String?
+  counts    String
+  yarnType  String
+  millName  String?
+  color     String?
+  qty       Float
+  uom       String  @default("Kgs")
+  rate      Float
+  amount    Float
+
+  @@map("yarn_purchase_order_items")
+}
+
+model YarnPurchase {
+  id          String   @id @default(cuid())
+  grnNo       String   @unique
+  grnDate     DateTime
+  partyId     String
+  party       Party    @relation(fields: [partyId], references: [id])
+  storeId     String?
+  poId        String?  // Link to PO if "From PO"
+  invoiceNo   String?
+  invoiceDate DateTime?
+  narration   String?
+  vehicleNo   String?
+  totalQty    Float    @default(0)
+  totalAmount Float    @default(0)
+  gstAmount   Float    @default(0)
+  otherCharges Float   @default(0)
+  netAmount   Float    @default(0)
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items YarnPurchaseItem[]
+
+  @@map("yarn_purchases")
+}
+
+model YarnPurchaseItem {
+  id         String      @id @default(cuid())
+  purchaseId String
+  purchase   YarnPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  slNo       Int
+  lotNo      String?
+  styleNo    String?
+  counts     String
+  yarnType   String
+  millName   String?
+  color      String?
+  noOfBags   Int         @default(0)
+  qty        Float
+  uom        String      @default("Kgs")
+  rate       Float
+  amount     Float
+
+  @@map("yarn_purchase_items")
+}
+
+model YarnProcessOutward {
+  id           String   @id @default(cuid())
+  dcNo         String   @unique
+  dcDate       DateTime
+  processType  String   // Dyeing, Winding, Twisting, Knitting
+  storeId      String?
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  targetDate   DateTime?
+  type         String   @default("Fresh") // Fresh, Re-work(F), Re-Process(C)
+  narration    String?
+  vehicleNo    String?
+  transport    String?
+  ourTeam      String?
+  totalQty     Float    @default(0)
+  totalBags    Int      @default(0)
+  otherCharges Float    @default(0)
+  totalAmount  Float    @default(0)
+  gstAmount    Float    @default(0)
+  roundOff     Float    @default(0)
+  netAmount    Float    @default(0)
+  status       String   @default("Open") // Open, Partial, Closed
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items   YarnProcessOutwardItem[]
+  inwards YarnProcessInward[]
+
+  @@map("yarn_process_outwards")
+}
+
+model YarnProcessOutwardItem {
+  id         String             @id @default(cuid())
+  outwardId  String
+  outward    YarnProcessOutward @relation(fields: [outwardId], references: [id], onDelete: Cascade)
+  slNo       Int
+  lotNo      String?
+  styleNo    String?
+  counts     String?
+  yarnType   String?
+  millName   String?
+  color      String?
+  dyeColor   String?
+  noOfBags   Int                @default(0)
+  stockQty   Float              @default(0)
+  issueKgs   Float
+  uom        String             @default("Kgs")
+  rate       Float              @default(0)
+  amount     Float              @default(0)
+
+  @@map("yarn_process_outward_items")
+}
+
+model YarnProcessInward {
+  id           String   @id @default(cuid())
+  dcNo         String   @unique
+  dcDate       DateTime
+  processType  String   // Dyeing, Winding, Twisting
+  storeId      String?
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  outwardId    String?
+  outward      YarnProcessOutward? @relation(fields: [outwardId], references: [id])
+  pdcNo        String?
+  pdcDate      DateTime?
+  isPartReceipt Boolean @default(false)
+  narration    String?
+  vehicleNo    String?
+  transport    String?
+  totalQty     Float    @default(0)
+  otherCharges Float    @default(0)
+  totalAmount  Float    @default(0)
+  gstAmount    Float    @default(0)
+  roundOff     Float    @default(0)
+  netAmount    Float    @default(0)
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items YarnProcessInwardItem[]
+
+  @@map("yarn_process_inwards")
+}
+
+model YarnProcessInwardItem {
+  id          String            @id @default(cuid())
+  inwardId    String
+  inward      YarnProcessInward @relation(fields: [inwardId], references: [id], onDelete: Cascade)
+  slNo        Int
+  outwardDcNo String?
+  lotNo       String?
+  styleNo     String?
+  counts      String?
+  yarnType    String?
+  issueColor  String?
+  recColor    String?
+  balQty      Float             @default(0)
+  recQty      Float
+  uom         String            @default("Kgs")
+  rate        Float             @default(0)
+  amount      Float             @default(0)
+
+  @@map("yarn_process_inward_items")
+}
+
+model YarnSale {
+  id           String   @id @default(cuid())
+  billNo       String   @unique
+  billDate     DateTime
+  billType     String   // GST, Cash, DC
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  storeId      String?
+  creditDays   Int      @default(0)
+  deliveryTo   String?
+  hsnCode      String?
+  narration    String?
+  vehicleNo    String?
+  transport    String?
+  totalQty     Float    @default(0)
+  freight      Float    @default(0)
+  packing      Float    @default(0)
+  totalAmount  Float    @default(0)
+  gstAmount    Float    @default(0)
+  otherCharges Float    @default(0)
+  roundOff     Float    @default(0)
+  netAmount    Float    @default(0)
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items YarnSaleItem[]
+
+  @@map("yarn_sales")
+}
+
+model YarnSaleItem {
+  id       String   @id @default(cuid())
+  saleId   String
+  sale     YarnSale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  slNo     Int
+  lotNo    String?
+  styleNo  String?
+  counts   String?
+  yarnType String?
+  millName String?
+  color    String?
+  noOfBags Int      @default(0)
+  stockQty Float    @default(0)
+  weight   Float
+  uom      String   @default("Kgs")
+  netRate  Float    @default(0)
+  rate     Float
+  amount   Float
+
+  @@map("yarn_sale_items")
+}
+
+// ==================== FABRIC MODULE ====================
+
+model FabricMaster {
+  id               String  @id @default(cuid())
+  clothDescription String
+  dia              String? // Diameter/Width
+  gsm              Int?
+  content          String?
+  isActive         Boolean @default(true)
+
+  @@unique([clothDescription, dia, gsm])
+  @@map("fabric_masters")
+}
+
+model FabricStock {
+  id               String  @id @default(cuid())
+  storeId          String
+  lotNo            String
+  styleNo          String?
+  dia              String?
+  clothDescription String?
+  content          String?
+  color            String?
+  dyeColor         String?
+  printColor       String?
+  gsm              Int?
+  counts           String?
+  weight           Float   @default(0)
+  rolls            Int     @default(0)
+  uom              String  @default("Kgs")
+  rate             Float   @default(0)
+  process          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("fabric_stock")
+}
+
+model FabricProcessOutward {
+  id           String   @id @default(cuid())
+  dcNo         String   @unique
+  dcDate       DateTime
+  processType  String   // Dyeing, Compacting, Heat Setting, Cutting, etc.
+  storeId      String?
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  targetDate   DateTime?
+  type         String   @default("Fresh")
+  narration    String?
+  vehicleNo    String?
+  transport    String?
+  totalQty     Float    @default(0)
+  totalRolls   Int      @default(0)
+  programQty   Int      @default(0)
+  otherCharges Float    @default(0)
+  totalAmount  Float    @default(0)
+  roundOff     Float    @default(0)
+  netAmount    Float    @default(0)
+  status       String   @default("Open")
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  stockItems   FabricProcessOutwardItem[]
+  programItems FabricProcessOutwardProgram[]
+
+  @@map("fabric_process_outwards")
+}
+
+model FabricProcessOutwardItem {
+  id               String              @id @default(cuid())
+  outwardId        String
+  outward          FabricProcessOutward @relation(fields: [outwardId], references: [id], onDelete: Cascade)
+  slNo             Int
+  fromLotNo        String?
+  fromStyle        String?
+  lotNo            String?
+  styleNo          String?
+  dia              String?
+  clothDescription String?
+  content          String?
+  color            String?
+  printColor       String?
+  gsm              Int?
+  counts           String?
+  stockKgs         Float               @default(0)
+  weight           Float               @default(0)
+  rolls            Int                 @default(0)
+
+  @@map("fabric_process_outward_items")
+}
+
+model FabricProcessOutwardProgram {
+  id           String              @id @default(cuid())
+  outwardId    String
+  outward      FabricProcessOutward @relation(fields: [outwardId], references: [id], onDelete: Cascade)
+  slNo         Int
+  lotNo        String?
+  styleNo      String?
+  styleRef     String?
+  styleType    String?
+  part         String?
+  partGroup    String?
+  noOfParts    Int                 @default(0)
+  pcsWeight    Float               @default(0)
+  color        String?
+  size         String?
+  qty          Int                 @default(0)
+
+  @@map("fabric_process_outward_programs")
+}
+
+model FabricProcessInward {
+  id           String   @id @default(cuid())
+  dcNo         String   @unique
+  dcDate       DateTime
+  processType  String
+  storeId      String?
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  pdcNo        String?
+  pdcDate      DateTime?
+  narration    String?
+  vehicleNo    String?
+  transport    String?
+  totalQty     Float    @default(0)
+  totalRolls   Int      @default(0)
+  otherCharges Float    @default(0)
+  totalAmount  Float    @default(0)
+  gstAmount    Float    @default(0)
+  roundOff     Float    @default(0)
+  netAmount    Float    @default(0)
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items FabricProcessInwardItem[]
+
+  @@map("fabric_process_inwards")
+}
+
+model FabricProcessInwardItem {
+  id               String             @id @default(cuid())
+  inwardId         String
+  inward           FabricProcessInward @relation(fields: [inwardId], references: [id], onDelete: Cascade)
+  slNo             Int
+  lotNo            String?
+  styleNo          String?
+  dia              String?
+  clothDescription String?
+  color            String?
+  weight           Float              @default(0)
+  rolls            Int                @default(0)
+  uom              String             @default("Kgs")
+  rate             Float              @default(0)
+  amount           Float              @default(0)
+
+  @@map("fabric_process_inward_items")
+}
+
+// ==================== GARMENT MODULE ====================
+
+model GarmentStyle {
+  id             String  @id @default(cuid())
+  styleNo        String  @unique
+  styleReference String?
+  styleType      String?
+  description    String?
+  isActive       Boolean @default(true)
+
+  @@map("garment_styles")
+}
+
+model GarmentPart {
+  id        String  @id @default(cuid())
+  partName  String  @unique
+  partGroup String?
+
+  @@map("garment_parts")
+}
+
+model GarmentStock {
+  id        String  @id @default(cuid())
+  storeId   String
+  lotNo     String
+  styleNo   String?
+  styleRef  String?
+  styleType String?
+  part      String?
+  color     String?
+  size      String?
+  qty       Int     @default(0)
+  uom       String  @default("Pcs")
+  rate      Float   @default(0)
+  process   String? // Current stage
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("garment_stock")
+}
+
+model GarmentProcessOutward {
+  id           String   @id @default(cuid())
+  dcNo         String   @unique
+  dcDate       DateTime
+  processType  String   // PRINTING, STITCHING, WASHING, PACKING, etc.
+  storeId      String?
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  targetDate   DateTime?
+  remarks      String?
+  vehicleNo    String?
+  transport    String?
+  totalQty     Int      @default(0)
+  totalAmount  Float    @default(0)
+  status       String   @default("Open")
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items GarmentProcessOutwardItem[]
+
+  @@map("garment_process_outwards")
+}
+
+model GarmentProcessOutwardItem {
+  id        String                @id @default(cuid())
+  outwardId String
+  outward   GarmentProcessOutward @relation(fields: [outwardId], references: [id], onDelete: Cascade)
+  slNo      Int
+  bundleNo  String?
+  lotNo     String?
+  styleNo   String?
+  styleRef  String?
+  styleType String?
+  part      String?
+  color     String?
+  size      String?
+  qty       Int
+  uom       String                @default("Pcs")
+  rate      Float                 @default(0)
+  amount    Float                 @default(0)
+
+  @@map("garment_process_outward_items")
+}
+
+model GarmentProcessInward {
+  id           String   @id @default(cuid())
+  dcNo         String   @unique
+  dcDate       DateTime
+  processType  String
+  storeId      String?
+  partyId      String
+  party        Party    @relation(fields: [partyId], references: [id])
+  pdcNo        String?
+  pdcDate      DateTime?
+  narration    String?
+  vehicleNo    String?
+  totalQty     Int      @default(0)
+  totalAmount  Float    @default(0)
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items GarmentProcessInwardItem[]
+
+  @@map("garment_process_inwards")
+}
+
+model GarmentProcessInwardItem {
+  id        String               @id @default(cuid())
+  inwardId  String
+  inward    GarmentProcessInward @relation(fields: [inwardId], references: [id], onDelete: Cascade)
+  slNo      Int
+  bundleNo  String?
+  lotNo     String?
+  styleNo   String?
+  styleRef  String?
+  part      String?
+  color     String?
+  size      String?
+  goodQty   Int                  @default(0)
+  defectQty Int                  @default(0)
+  uom       String               @default("Pcs")
+
+  @@map("garment_process_inward_items")
+}
+
+// ==================== ACCESSORY MODULE ====================
+
+model AccessoryGroup {
+  id        String @id @default(cuid())
+  groupName String @unique
+  hsnCode   String?
+  gstPercent Float @default(0)
+
+  items AccessoryMaster[]
+
+  @@map("accessory_groups")
+}
+
+model AccessoryMaster {
+  id           String         @id @default(cuid())
+  accessoryName String
+  groupId      String
+  group        AccessoryGroup @relation(fields: [groupId], references: [id])
+  purchaseUom  String?
+  stockUom     String?
+  minimumStock Float          @default(0)
+  hsnCode      String?
+  gstPercent   Float          @default(0)
+  isActive     Boolean        @default(true)
+
+  @@map("accessory_masters")
+}
+
+model AccessoryStock {
+  id          String  @id @default(cuid())
+  storeId     String
+  lotNo       String
+  styleNo     String?
+  accessoryId String
+  accColor    String?
+  accSize     String?
+  qty         Float   @default(0)
+  weight      Float   @default(0)
+  uom         String
+  rate        Float   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("accessory_stock")
+}
+
+// ==================== CONTRACTOR MODULE ====================
+
+model ContractorBill {
+  id          String   @id @default(cuid())
+  billNo      String   @unique
+  billDate    DateTime
+  partyId     String
+  processType String?
+  narration   String?
+  totalAmount Float    @default(0)
+  gstAmount   Float    @default(0)
+  netAmount   Float    @default(0)
+  status      String   @default("Pending") // Pending, Paid, Partial
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contractor_bills")
+}
+
+model ContractorPayment {
+  id          String   @id @default(cuid())
+  paymentNo   String   @unique
+  paymentDate DateTime
+  partyId     String
+  billId      String?
+  amount      Float
+  paymentMode String?  // Cash, Bank, Cheque
+  referenceNo String?
+  narration   String?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contractor_payments")
+}
+
+// ==================== NOTIFICATIONS ====================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  type      String   // STOCK_LOW, DC_OVERDUE, PENDING_APPROVAL
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  metadata  String?  // JSON string for extra data
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
