@@ -1,112 +1,60 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
 export async function GET() {
   try {
     const [
-      partiesCount,
-      pendingOutwardYarn,
-      pendingOutwardFabric,
-      pendingOutwardGarment,
-      pendingInwardYarn,
-      pendingInwardFabric,
-      pendingInwardGarment,
-      lowStockYarn,
+      partiesCount, storesCount,
+      pendingOutwardYarn, pendingOutwardFabric, pendingOutwardGarment,
+      yarnStockAgg, lowStockYarn,
+      overdueYarnDCs, overdueFabricDCs,
     ] = await Promise.all([
       db.party.count({ where: { isActive: true } }),
+      db.store.count(),
       db.yarnProcessOutward.count({ where: { status: "Open" } }),
       db.fabricProcessOutward.count({ where: { status: "Open" } }),
       db.garmentProcessOutward.count({ where: { status: "Open" } }),
-      db.yarnProcessInward.count(),
-      db.fabricProcessInward.count(),
-      db.garmentProcessInward.count(),
-      db.yarnStock.count({ where: { stockKgs: { lt: 20 } } }),
+      db.yarnStock.aggregate({ _sum: { stockKgs: true }, _count: true }),
+      db.yarnStock.findMany({ where: { stockKgs: { lt: 20 } }, take: 5, orderBy: { stockKgs: "asc" } }),
+      db.yarnProcessOutward.findMany({ where: { status: "Open", targetDate: { lt: new Date() } }, take: 5, include: { party: { select: { partyName: true } } } }),
+      db.fabricProcessOutward.findMany({ where: { status: "Open", targetDate: { lt: new Date() } }, take: 5, include: { party: { select: { partyName: true } } } }),
     ])
 
-    const pendingOutwards =
-      pendingOutwardYarn + pendingOutwardFabric + pendingOutwardGarment
-    const pendingInwards =
-      pendingInwardYarn + pendingInwardFabric + pendingInwardGarment
-    const lowStockCount = lowStockYarn
-
-    // Fetch a handful of recent outward DCs as "recent transactions"
-    const recentYarnOutwards = await db.yarnProcessOutward.findMany({
-      take: 3,
-      orderBy: { dcDate: "desc" },
-      include: { party: { select: { partyName: true } } },
-    })
-
-    const recentFabricOutwards = await db.fabricProcessOutward.findMany({
-      take: 3,
-      orderBy: { dcDate: "desc" },
-      include: { party: { select: { partyName: true } } },
-    })
+    const [recentYarnOut, recentFabricOut, recentGarmentOut, recentYarnIn] = await Promise.all([
+      db.yarnProcessOutward.findMany({ take: 4, orderBy: { dcDate: "desc" }, include: { party: { select: { partyName: true } } } }),
+      db.fabricProcessOutward.findMany({ take: 3, orderBy: { dcDate: "desc" }, include: { party: { select: { partyName: true } } } }),
+      db.garmentProcessOutward.findMany({ take: 3, orderBy: { dcDate: "desc" }, include: { party: { select: { partyName: true } } } }),
+      db.yarnProcessInward.findMany({ take: 3, orderBy: { dcDate: "desc" }, include: { party: { select: { partyName: true } } } }),
+    ])
 
     const recentTransactions = [
-      ...recentYarnOutwards.map((o) => ({
-        type: "Outward" as const,
-        dcRef: o.dcNo,
-        party: o.party.partyName,
-        date: o.dcDate.toISOString(),
-        qty: `${o.totalQty} Kgs`,
-        status: o.status,
-      })),
-      ...recentFabricOutwards.map((o) => ({
-        type: "Outward" as const,
-        dcRef: o.dcNo,
-        party: o.party.partyName,
-        date: o.dcDate.toISOString(),
-        qty: `${o.totalQty} Kgs`,
-        status: o.status,
-      })),
-    ]
-      .sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
-      .slice(0, 6)
+      ...recentYarnOut.map(dc => ({ type: "Yarn Outward", dcRef: dc.dcNo, party: dc.party.partyName, date: dc.dcDate.toISOString(), qty: `${dc.totalQty} Kgs`, status: dc.status })),
+      ...recentFabricOut.map(dc => ({ type: "Fabric Outward", dcRef: dc.dcNo, party: dc.party.partyName, date: dc.dcDate.toISOString(), qty: `${dc.totalQty} Kgs`, status: dc.status })),
+      ...recentGarmentOut.map(dc => ({ type: "Garment Outward", dcRef: dc.dcNo, party: dc.party.partyName, date: dc.dcDate.toISOString(), qty: `${dc.totalQty} Pcs`, status: dc.status })),
+      ...recentYarnIn.map(dc => ({ type: "Yarn Inward", dcRef: dc.dcNo, party: dc.party.partyName, date: dc.dcDate.toISOString(), qty: `${dc.totalQty} Kgs`, status: "Received" })),
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 8)
 
-    return NextResponse.json({
-      partiesCount,
-      pendingOutwards,
-      pendingInwards,
-      lowStockCount,
+    const notifications = [
+      ...overdueYarnDCs.map(dc => ({ type: "overdue" as const, message: `Yarn DC ${dc.dcNo} to ${dc.party.partyName} is overdue`, time: dc.dcDate.toISOString() })),
+      ...overdueFabricDCs.map(dc => ({ type: "overdue" as const, message: `Fabric DC ${dc.dcNo} to ${dc.party.partyName} is overdue`, time: dc.dcDate.toISOString() })),
+      ...lowStockYarn.map(s => ({ type: "stock" as const, message: `${s.counts} ${s.yarnType} yarn stock low (${s.stockKgs} Kgs)`, time: s.updatedAt.toISOString() })),
+    ]
+
+    return Response.json({
+      stats: {
+        totalParties: partiesCount,
+        totalStores: storesCount,
+        pendingOutward: pendingOutwardYarn + pendingOutwardFabric + pendingOutwardGarment,
+        yarnStockKgs: yarnStockAgg._sum.stockKgs ?? 0,
+      },
       recentTransactions,
+      notifications,
     })
   } catch (error) {
-    // Database may not be seeded yet -- return mock data
-    console.error("Dashboard API error (returning mock data):", error)
-
-    return NextResponse.json({
-      partiesCount: 148,
-      pendingOutwards: 23,
-      pendingInwards: 17,
-      lowStockCount: 5,
-      recentTransactions: [
-        {
-          type: "Purchase",
-          dcRef: "GRN-2026-0045",
-          party: "Sri Lakshmi Yarns",
-          date: "2026-03-19",
-          qty: "500 Kgs",
-          status: "Closed",
-        },
-        {
-          type: "Outward",
-          dcRef: "YDC-2026-0112",
-          party: "Devi Dyers",
-          date: "2026-03-18",
-          qty: "320 Kgs",
-          status: "Open",
-        },
-        {
-          type: "Inward",
-          dcRef: "YIN-2026-0089",
-          party: "Devi Dyers",
-          date: "2026-03-18",
-          qty: "290 Kgs",
-          status: "Partial",
-        },
-      ],
+    console.error("Dashboard API error:", error)
+    return Response.json({
+      stats: { totalParties: 0, totalStores: 0, pendingOutward: 0, yarnStockKgs: 0 },
+      recentTransactions: [],
+      notifications: [],
     })
   }
 }
