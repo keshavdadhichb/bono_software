@@ -26,7 +26,9 @@ import {
   ChevronLeft,
   LogOut,
   Scissors,
+  Shield,
 } from "lucide-react"
+import { usePermissions } from "@/lib/use-permissions"
 
 // ---------- Types ----------
 
@@ -133,12 +135,25 @@ interface AppSidebarProps {
 export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const permissions = usePermissions()
+
+  const fullNavigation = React.useMemo(() => {
+    const nav = [...navigation]
+    if (permissions.canManageUsers) {
+      nav.push({
+        label: "Admin",
+        icon: Shield,
+        children: [{ label: "Users", href: "/admin/users" }],
+      })
+    }
+    return nav
+  }, [permissions.canManageUsers])
 
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
   >(() => {
     const initial: Record<string, boolean> = {}
-    for (const group of navigation) {
+    for (const group of fullNavigation) {
       if (group.children) {
         const isActive = group.children.some((child) =>
           pathname.startsWith(child.href)
@@ -187,7 +202,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       <ScrollArea className="flex-1 overflow-y-auto">
         <nav className="flex flex-col gap-0.5 px-2 py-3">
           <TooltipProvider>
-            {navigation.map((group) => {
+            {fullNavigation.map((group) => {
               const Icon = group.icon
               const active = isSectionActive(group)
               const isOpen = openSections[group.label] ?? false
@@ -365,12 +380,25 @@ interface MobileSidebarProps {
 export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const permissions = usePermissions()
+
+  const fullNavigation = React.useMemo(() => {
+    const nav = [...navigation]
+    if (permissions.canManageUsers) {
+      nav.push({
+        label: "Admin",
+        icon: Shield,
+        children: [{ label: "Users", href: "/admin/users" }],
+      })
+    }
+    return nav
+  }, [permissions.canManageUsers])
 
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
   >(() => {
     const initial: Record<string, boolean> = {}
-    for (const group of navigation) {
+    for (const group of fullNavigation) {
       if (group.children) {
         const isActive = group.children.some((child) =>
           pathname.startsWith(child.href)
@@ -411,7 +439,7 @@ export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
       {/* Navigation */}
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-0.5 px-2 py-3">
-          {navigation.map((group) => {
+          {fullNavigation.map((group) => {
             const Icon = group.icon
             const active = isSectionActive(group)
             const isOpen = openSections[group.label] ?? false

@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { db } from "./db"
+import { getUserPermissions } from "./permissions"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -53,7 +54,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         const userRole = token.userRole as string
         const userId = token.userId as string
-        Object.assign(session.user, { role: userRole, id: userId })
+        const permissions = await getUserPermissions(userId)
+        Object.assign(session.user, {
+          role: userRole,
+          id: userId,
+          permissions,
+        })
       }
       return session
     },

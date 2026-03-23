@@ -8,6 +8,7 @@ import {
   SheetContent,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { AiProvider } from "@/components/ai/ai-provider"
 
 export default function DashboardLayout({
   children,
@@ -45,6 +46,9 @@ export default function DashboardLayout({
           </div>
         </main>
       </div>
+
+      {/* AI Command Bar — floating button + chat panel */}
+      <AiProvider />
     </div>
   )
 }

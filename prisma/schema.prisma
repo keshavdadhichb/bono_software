@@ -21,6 +21,9 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  permissions   UserPermission?
+  aiChats       AiChatMessage[]
+
   @@map("users")
 }
 
@@ -29,6 +32,54 @@ enum Role {
   MANAGER
   DATA_ENTRY
   VIEWER
+}
+
+model UserPermission {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Module access (view)
+  canViewYarn       Boolean @default(false)
+  canViewFabric     Boolean @default(false)
+  canViewGarment    Boolean @default(false)
+  canViewAccessory  Boolean @default(false)
+  canViewMaster     Boolean @default(false)
+  canViewReports    Boolean @default(false)
+
+  // Module write (create/edit)
+  canEditYarn       Boolean @default(false)
+  canEditFabric     Boolean @default(false)
+  canEditGarment    Boolean @default(false)
+  canEditAccessory  Boolean @default(false)
+  canEditMaster     Boolean @default(false)
+
+  // Module delete
+  canDeleteYarn     Boolean @default(false)
+  canDeleteFabric   Boolean @default(false)
+  canDeleteGarment  Boolean @default(false)
+  canDeleteAccessory Boolean @default(false)
+  canDeleteMaster   Boolean @default(false)
+
+  // Special
+  canExport         Boolean @default(false)
+  canPrint          Boolean @default(false)
+  canManageUsers    Boolean @default(false)
+  canUseAI          Boolean @default(true)
+
+  @@map("user_permissions")
+}
+
+model AiChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   // "user" or "assistant"
+  content   String
+  metadata  String?  // JSON: action taken, entities referenced, etc.
+  createdAt DateTime @default(now())
+
+  @@map("ai_chat_messages")
 }
 
 model Company {

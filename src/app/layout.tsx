@@ -16,8 +16,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BonoStyle ERP",
-  description: "Garment Manufacturing ERP System",
+  title: "BonoStyle ERP | Garment Manufacturing Management",
+  description:
+    "AI-powered ERP system for garment manufacturing. Track yarn, fabric, garment production, inventory, and more.",
 };
 
 export default function RootLayout({
