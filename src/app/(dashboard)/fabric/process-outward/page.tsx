@@ -587,12 +587,12 @@ export default function FabricProcessOutwardPage() {
   // ---------- LIST VIEW ----------
   if (view === "list") {
     return (
-      <div className="p-4 md:p-6 space-y-4">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
             <Layers className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Fabric Process Outward</h1>
+            <h1 className="text-xl font-semibold tracking-tight">Fabric Process Outward</h1>
           </div>
           <Button size="sm" onClick={openNewForm}>
             <Plus className="h-4 w-4 mr-1" />
@@ -601,7 +601,7 @@ export default function FabricProcessOutwardPage() {
         </div>
 
         {/* Filter Tabs */}
-        <Card className="p-4">
+        <Card className="p-4 border-0 shadow-sm bg-white">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-1">
               {PROCESS_TABS.map((tab) => (
@@ -629,21 +629,21 @@ export default function FabricProcessOutwardPage() {
         </Card>
 
         {/* Table */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-28">DC No</TableHead>
-                  <TableHead className="w-24">Date</TableHead>
-                  <TableHead className="w-28">Process</TableHead>
-                  <TableHead>Party</TableHead>
-                  <TableHead className="w-28">Store</TableHead>
-                  <TableHead className="w-20">Type</TableHead>
-                  <TableHead className="w-24 text-right">Total Qty</TableHead>
-                  <TableHead className="w-20 text-right">Rolls</TableHead>
-                  <TableHead className="w-24">Status</TableHead>
-                  <TableHead className="w-20 text-right">Actions</TableHead>
+                  <TableHead className="w-28 text-[11px]">DC No</TableHead>
+                  <TableHead className="w-24 text-[11px]">Date</TableHead>
+                  <TableHead className="w-28 text-[11px]">Process</TableHead>
+                  <TableHead className="text-[11px]">Party</TableHead>
+                  <TableHead className="w-28 text-[11px]">Store</TableHead>
+                  <TableHead className="w-20 text-[11px]">Type</TableHead>
+                  <TableHead className="w-24 text-[11px] text-right">Total Qty</TableHead>
+                  <TableHead className="w-20 text-[11px] text-right">Rolls</TableHead>
+                  <TableHead className="w-24 text-[11px]">Status</TableHead>
+                  <TableHead className="w-20 text-[11px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -672,25 +672,25 @@ export default function FabricProcessOutwardPage() {
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => openEditForm(outward)}
                     >
-                      <TableCell className="font-mono font-medium">
+                      <TableCell className="text-[13px] font-mono font-medium">
                         {outward.dcNo}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px]">
                         {format(new Date(outward.dcDate), "dd/MM/yyyy")}
                       </TableCell>
-                      <TableCell>{outward.processType}</TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="text-[13px]">{outward.processType}</TableCell>
+                      <TableCell className="text-[13px] font-medium">
                         {outward.party?.partyName || "-"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px]">
                         {stores.find((s) => s.id === outward.storeId)
                           ?.storeName || "-"}
                       </TableCell>
-                      <TableCell>{outward.type}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-[13px]">{outward.type}</TableCell>
+                      <TableCell className="text-[13px] text-right font-mono">
                         {outward.totalQty.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-[13px] text-right font-mono">
                         {outward.totalRolls}
                       </TableCell>
                       <TableCell>
@@ -786,7 +786,7 @@ export default function FabricProcessOutwardPage() {
 
   // ---------- FORM VIEW ----------
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Form Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -801,7 +801,7 @@ export default function FabricProcessOutwardPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold">
+            <h1 className="text-xl font-semibold tracking-tight">
               {editingId ? "Edit DC" : "New Fabric Process Outward DC"}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -833,7 +833,7 @@ export default function FabricProcessOutwardPage() {
       </div>
 
       {/* Header Fields */}
-      <Card className="p-4">
+      <Card className="p-4 border-0 shadow-sm bg-white">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* DC No (auto) */}
           <div className="space-y-1.5">
@@ -976,7 +976,7 @@ export default function FabricProcessOutwardPage() {
       </Card>
 
       {/* Items Tabs */}
-      <Card className="p-4">
+      <Card className="p-4 border-0 shadow-sm bg-white">
         <Tabs defaultValue="stock">
           <TabsList>
             <TabsTrigger value="stock">Stock Transfer</TabsTrigger>
@@ -1352,7 +1352,7 @@ export default function FabricProcessOutwardPage() {
       </Card>
 
       {/* Footer */}
-      <Card className="p-4">
+      <Card className="p-4 border-0 shadow-sm bg-white">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
             <Label>Narration</Label>

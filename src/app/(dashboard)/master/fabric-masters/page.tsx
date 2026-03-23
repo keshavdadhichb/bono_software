@@ -94,27 +94,27 @@ export default function FabricMastersPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Layers className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Fabric Masters</h1>
+          <Layers className="size-5 text-primary" />
+          <h1 className="text-xl font-semibold tracking-tight">Fabric Masters</h1>
         </div>
-        <Button size="sm" onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Fabric</Button>
+        <Button size="sm" className="h-8 text-[13px]" onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Fabric</Button>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Cloth Description</TableHead>
-                <TableHead>Dia</TableHead>
-                <TableHead>GSM</TableHead>
-                <TableHead className="hidden md:table-cell">Content</TableHead>
-                <TableHead className="w-20">Status</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Cloth Description</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Dia</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">GSM</TableHead>
+                <TableHead className="hidden md:table-cell text-[11px] uppercase tracking-wide">Content</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Status</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -124,12 +124,12 @@ export default function FabricMastersPage() {
                 <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">No fabric masters found.</TableCell></TableRow>
               ) : items.map((item, idx) => (
                 <TableRow key={item.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openEdit(item)}>
-                  <TableCell className="font-mono text-muted-foreground">{idx + 1}</TableCell>
-                  <TableCell className="font-medium">{item.clothDescription}</TableCell>
-                  <TableCell>{item.dia || "-"}</TableCell>
-                  <TableCell>{item.gsm ?? "-"}</TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">{item.content || "-"}</TableCell>
-                  <TableCell><Badge variant={item.isActive ? "default" : "secondary"}>{item.isActive ? "Active" : "Inactive"}</Badge></TableCell>
+                  <TableCell className="text-[13px] font-mono text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="text-[13px] font-medium">{item.clothDescription}</TableCell>
+                  <TableCell className="text-[13px]">{item.dia || "-"}</TableCell>
+                  <TableCell className="text-[13px]">{item.gsm ?? "-"}</TableCell>
+                  <TableCell className="text-[13px] hidden md:table-cell text-muted-foreground">{item.content || "-"}</TableCell>
+                  <TableCell><Badge variant={item.isActive ? "default" : "secondary"} className="border">{item.isActive ? "Active" : "Inactive"}</Badge></TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); openEdit(item); }}><Edit className="h-4 w-4" /></Button>
@@ -148,26 +148,26 @@ export default function FabricMastersPage() {
           <DialogHeader><DialogTitle>{editing ? "Edit Fabric" : "Add Fabric"}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <Label>Cloth Description <span className="text-destructive">*</span></Label>
+              <Label className="text-[13px]">Cloth Description <span className="text-destructive">*</span></Label>
               <Input value={form.clothDescription} onChange={(e) => setForm({ ...form, clothDescription: e.target.value })} placeholder="e.g. Single Jersey" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Dia (Width)</Label>
+                <Label className="text-[13px]">Dia (Width)</Label>
                 <Input value={form.dia} onChange={(e) => setForm({ ...form, dia: e.target.value })} placeholder="e.g. 26D" />
               </div>
               <div className="space-y-1.5">
-                <Label>GSM</Label>
+                <Label className="text-[13px]">GSM</Label>
                 <Input type="number" value={form.gsm} onChange={(e) => setForm({ ...form, gsm: e.target.value })} placeholder="e.g. 180" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Content</Label>
+              <Label className="text-[13px]">Content</Label>
               <Input value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="e.g. 100% Cotton" />
             </div>
             <div className="flex items-center gap-2">
               <input type="checkbox" id="isActive" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="h-4 w-4 rounded border-gray-300" />
-              <Label htmlFor="isActive">Active</Label>
+              <Label htmlFor="isActive" className="text-[13px]">Active</Label>
             </div>
           </div>
           <div className="flex justify-end gap-2">

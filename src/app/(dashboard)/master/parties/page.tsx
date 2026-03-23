@@ -280,19 +280,19 @@ export default function PartiesPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Building2 className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Parties</h1>
+          <Building2 className="size-5 text-primary" />
+          <h1 className="text-xl font-semibold tracking-tight">Parties</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={exportToExcel}>
+          <Button variant="outline" size="sm" className="h-8 text-[13px]" onClick={exportToExcel}>
             <Download className="h-4 w-4 mr-1" />
             Excel
           </Button>
-          <Button size="sm" onClick={openAddDialog}>
+          <Button size="sm" className="h-8 text-[13px]" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-1" />
             Add Party
           </Button>
@@ -300,7 +300,7 @@ export default function PartiesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="p-4">
+      <Card className="border-0 shadow-sm bg-white p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="w-full sm:w-48">
             <Select value={filterType} onValueChange={(v) => setFilterType(v ?? "")}>
@@ -323,26 +323,26 @@ export default function PartiesPage() {
               placeholder="Search by party name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 h-9 text-[13px]"
             />
           </div>
         </div>
       </Card>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Party Name</TableHead>
-                <TableHead className="w-28">Type</TableHead>
-                <TableHead className="w-32">Mobile</TableHead>
-                <TableHead className="w-36">GST No</TableHead>
-                <TableHead className="w-28">State</TableHead>
-                <TableHead className="w-20">Status</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Party Name</TableHead>
+                <TableHead className="w-28 text-[11px] uppercase tracking-wide">Type</TableHead>
+                <TableHead className="w-32 text-[11px] uppercase tracking-wide">Mobile</TableHead>
+                <TableHead className="w-36 text-[11px] uppercase tracking-wide">GST No</TableHead>
+                <TableHead className="w-28 text-[11px] uppercase tracking-wide">State</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Status</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -371,21 +371,22 @@ export default function PartiesPage() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => openEditDialog(party)}
                   >
-                    <TableCell className="font-mono text-muted-foreground">
+                    <TableCell className="text-[13px] font-mono text-muted-foreground">
                       {(currentPage - 1) * PAGE_SIZE + idx + 1}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {party.partyName}
                     </TableCell>
-                    <TableCell>{party.partyType}</TableCell>
-                    <TableCell>{party.mobile || "-"}</TableCell>
-                    <TableCell className="font-mono text-xs">
+                    <TableCell className="text-[13px]">{party.partyType}</TableCell>
+                    <TableCell className="text-[13px]">{party.mobile || "-"}</TableCell>
+                    <TableCell className="text-[13px] font-mono">
                       {party.gstNo || "-"}
                     </TableCell>
-                    <TableCell>{party.state || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{party.state || "-"}</TableCell>
                     <TableCell>
                       <Badge
                         variant={party.isActive ? "default" : "secondary"}
+                        className="border"
                       >
                         {party.isActive ? "Active" : "Inactive"}
                       </Badge>
@@ -474,7 +475,7 @@ export default function PartiesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
             {/* Party Name */}
             <div className="space-y-1.5">
-              <Label htmlFor="partyName">
+              <Label htmlFor="partyName" className="text-[13px]">
                 Party Name <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -487,7 +488,7 @@ export default function PartiesPage() {
 
             {/* Party Type */}
             <div className="space-y-1.5">
-              <Label>
+              <Label className="text-[13px]">
                 Party Type <span className="text-destructive">*</span>
               </Label>
               <Select
@@ -509,7 +510,7 @@ export default function PartiesPage() {
 
             {/* Address */}
             <div className="space-y-1.5 sm:col-span-2">
-              <Label>Address Line 1</Label>
+              <Label className="text-[13px]">Address Line 1</Label>
               <Input
                 value={form.address1}
                 onChange={(e) => updateForm("address1", e.target.value)}
@@ -517,7 +518,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Address Line 2</Label>
+              <Label className="text-[13px]">Address Line 2</Label>
               <Input
                 value={form.address2}
                 onChange={(e) => updateForm("address2", e.target.value)}
@@ -525,7 +526,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Address Line 3</Label>
+              <Label className="text-[13px]">Address Line 3</Label>
               <Input
                 value={form.address3}
                 onChange={(e) => updateForm("address3", e.target.value)}
@@ -533,7 +534,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Address Line 4</Label>
+              <Label className="text-[13px]">Address Line 4</Label>
               <Input
                 value={form.address4}
                 onChange={(e) => updateForm("address4", e.target.value)}
@@ -541,7 +542,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>District</Label>
+              <Label className="text-[13px]">District</Label>
               <Input
                 value={form.district}
                 onChange={(e) => updateForm("district", e.target.value)}
@@ -549,7 +550,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>State</Label>
+              <Label className="text-[13px]">State</Label>
               <Input
                 value={form.state}
                 onChange={(e) => updateForm("state", e.target.value)}
@@ -557,7 +558,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Pincode</Label>
+              <Label className="text-[13px]">Pincode</Label>
               <Input
                 value={form.pincode}
                 onChange={(e) => updateForm("pincode", e.target.value)}
@@ -569,7 +570,7 @@ export default function PartiesPage() {
 
             {/* Contact */}
             <div className="space-y-1.5">
-              <Label>Phone</Label>
+              <Label className="text-[13px]">Phone</Label>
               <Input
                 value={form.phone}
                 onChange={(e) => updateForm("phone", e.target.value)}
@@ -577,7 +578,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Mobile</Label>
+              <Label className="text-[13px]">Mobile</Label>
               <Input
                 value={form.mobile}
                 onChange={(e) => updateForm("mobile", e.target.value)}
@@ -585,7 +586,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label>Email</Label>
+              <Label className="text-[13px]">Email</Label>
               <Input
                 value={form.email}
                 onChange={(e) => updateForm("email", e.target.value)}
@@ -598,7 +599,7 @@ export default function PartiesPage() {
 
             {/* Tax */}
             <div className="space-y-1.5">
-              <Label>GST No</Label>
+              <Label className="text-[13px]">GST No</Label>
               <Input
                 value={form.gstNo}
                 onChange={(e) => updateForm("gstNo", e.target.value)}
@@ -606,7 +607,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>PAN</Label>
+              <Label className="text-[13px]">PAN</Label>
               <Input
                 value={form.panNo}
                 onChange={(e) => updateForm("panNo", e.target.value)}
@@ -618,7 +619,7 @@ export default function PartiesPage() {
 
             {/* Bank */}
             <div className="space-y-1.5">
-              <Label>Bank Name</Label>
+              <Label className="text-[13px]">Bank Name</Label>
               <Input
                 value={form.bankName}
                 onChange={(e) => updateForm("bankName", e.target.value)}
@@ -626,7 +627,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Account No</Label>
+              <Label className="text-[13px]">Account No</Label>
               <Input
                 value={form.bankAccountNo}
                 onChange={(e) => updateForm("bankAccountNo", e.target.value)}
@@ -634,7 +635,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>IFSC Code</Label>
+              <Label className="text-[13px]">IFSC Code</Label>
               <Input
                 value={form.bankIfscCode}
                 onChange={(e) => updateForm("bankIfscCode", e.target.value)}
@@ -642,7 +643,7 @@ export default function PartiesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Credit Days</Label>
+              <Label className="text-[13px]">Credit Days</Label>
               <Input
                 value={form.creditDays}
                 onChange={(e) => updateForm("creditDays", e.target.value)}
@@ -662,7 +663,7 @@ export default function PartiesPage() {
                 onChange={(e) => updateForm("isActive", e.target.checked)}
                 className="h-4 w-4 rounded border-gray-300"
               />
-              <Label htmlFor="isActive">Active</Label>
+              <Label htmlFor="isActive" className="text-[13px]">Active</Label>
             </div>
           </div>
 

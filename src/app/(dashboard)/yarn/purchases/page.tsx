@@ -122,11 +122,11 @@ export default function YarnPurchasesPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ShoppingCart className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Yarn Purchases</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Yarn Purchases</h1>
         </div>
         <Button size="sm" onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> New Purchase</Button>
       </div>
@@ -138,17 +138,17 @@ export default function YarnPurchasesPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>GRN No</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Party</TableHead>
-                <TableHead className="hidden md:table-cell">Invoice No</TableHead>
-                <TableHead className="text-right">Qty (Kgs)</TableHead>
-                <TableHead className="text-right">Net Amount</TableHead>
+                <TableHead className="text-[11px]">GRN No</TableHead>
+                <TableHead className="text-[11px]">Date</TableHead>
+                <TableHead className="text-[11px]">Party</TableHead>
+                <TableHead className="text-[11px] hidden md:table-cell">Invoice No</TableHead>
+                <TableHead className="text-[11px] text-right">Qty (Kgs)</TableHead>
+                <TableHead className="text-[11px] text-right">Net Amount</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -158,12 +158,12 @@ export default function YarnPurchasesPage() {
                 <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No purchases found.</TableCell></TableRow>
               ) : purchases.map((p) => (
                 <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.grnNo}</TableCell>
-                  <TableCell>{new Date(p.grnDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{p.party.partyName}</TableCell>
-                  <TableCell className="hidden md:table-cell">{p.invoiceNo || "-"}</TableCell>
-                  <TableCell className="text-right">{p.totalQty.toFixed(2)}</TableCell>
-                  <TableCell className="text-right font-medium">{p.netAmount.toFixed(2)}</TableCell>
+                  <TableCell className="text-[13px] font-medium">{p.grnNo}</TableCell>
+                  <TableCell className="text-[13px]">{new Date(p.grnDate).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-[13px]">{p.party.partyName}</TableCell>
+                  <TableCell className="text-[13px] hidden md:table-cell">{p.invoiceNo || "-"}</TableCell>
+                  <TableCell className="text-[13px] text-right">{p.totalQty.toFixed(2)}</TableCell>
+                  <TableCell className="text-[13px] text-right font-medium">{p.netAmount.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

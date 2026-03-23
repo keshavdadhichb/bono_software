@@ -178,12 +178,12 @@ export default function FabricStockPage() {
   // ---------- Render ----------
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Layers className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Fabric Stock Report</h1>
+          <Layers className="size-5 text-primary" />
+          <h1 className="text-xl font-semibold tracking-tight">Fabric Stock Report</h1>
         </div>
         <Button variant="outline" size="sm" onClick={exportToExcel}>
           <Download className="h-4 w-4 mr-1" />
@@ -192,7 +192,7 @@ export default function FabricStockPage() {
       </div>
 
       {/* Filters */}
-      <Card className="p-4">
+      <Card className="border-0 shadow-sm bg-white p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="space-y-1.5">
             <Label className="text-xs">Store</Label>
@@ -242,24 +242,24 @@ export default function FabricStockPage() {
       </Card>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-24">Lot No</TableHead>
-                <TableHead className="w-24">Style No</TableHead>
-                <TableHead className="w-16">Dia</TableHead>
-                <TableHead className="w-36">Cloth Desc</TableHead>
-                <TableHead className="w-24">Content</TableHead>
-                <TableHead className="w-20">Color</TableHead>
-                <TableHead className="w-20">Dye Color</TableHead>
-                <TableHead className="w-24">Print Color</TableHead>
-                <TableHead className="w-16">GSM</TableHead>
-                <TableHead className="w-20 text-right">Weight</TableHead>
-                <TableHead className="w-16 text-right">Rolls</TableHead>
-                <TableHead className="w-20 text-right">Rate</TableHead>
-                <TableHead className="w-24 text-right">Value</TableHead>
+                <TableHead className="w-24 text-[11px] uppercase tracking-wide">Lot No</TableHead>
+                <TableHead className="w-24 text-[11px] uppercase tracking-wide">Style No</TableHead>
+                <TableHead className="w-16 text-[11px] uppercase tracking-wide">Dia</TableHead>
+                <TableHead className="w-36 text-[11px] uppercase tracking-wide">Cloth Desc</TableHead>
+                <TableHead className="w-24 text-[11px] uppercase tracking-wide">Content</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Color</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Dye Color</TableHead>
+                <TableHead className="w-24 text-[11px] uppercase tracking-wide">Print Color</TableHead>
+                <TableHead className="w-16 text-[11px] uppercase tracking-wide">GSM</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Weight</TableHead>
+                <TableHead className="w-16 text-right text-[11px] uppercase tracking-wide">Rolls</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Rate</TableHead>
+                <TableHead className="w-24 text-right text-[11px] uppercase tracking-wide">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -285,27 +285,27 @@ export default function FabricStockPage() {
                 <>
                   {paginated.map((item) => (
                     <TableRow key={item.id} className="hover:bg-muted/50">
-                      <TableCell className="font-mono font-medium">
+                      <TableCell className="text-[13px] font-mono font-medium">
                         {item.lotNo}
                       </TableCell>
-                      <TableCell>{item.styleNo || "-"}</TableCell>
-                      <TableCell>{item.dia || "-"}</TableCell>
-                      <TableCell>{item.clothDescription || "-"}</TableCell>
-                      <TableCell>{item.content || "-"}</TableCell>
-                      <TableCell>{item.color || "-"}</TableCell>
-                      <TableCell>{item.dyeColor || "-"}</TableCell>
-                      <TableCell>{item.printColor || "-"}</TableCell>
-                      <TableCell>{item.gsm || "-"}</TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-[13px]">{item.styleNo || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.dia || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.clothDescription || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.content || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.color || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.dyeColor || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.printColor || "-"}</TableCell>
+                      <TableCell className="text-[13px]">{item.gsm || "-"}</TableCell>
+                      <TableCell className="text-right text-[13px] font-mono">
                         {item.weight.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-right text-[13px] font-mono">
                         {item.rolls}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-right text-[13px] font-mono">
                         {item.rate.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-right text-[13px] font-mono">
                         {(item.weight * item.rate).toFixed(2)}
                       </TableCell>
                     </TableRow>
@@ -372,19 +372,19 @@ export default function FabricStockPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Total Weight (Kgs)</p>
-          <p className="text-2xl font-bold font-mono mt-1">
+        <Card className="border-0 shadow-sm bg-white p-4">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Weight (Kgs)</p>
+          <p className="text-2xl font-semibold font-mono mt-1">
             {totalWeight.toFixed(2)}
           </p>
         </Card>
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Total Rolls</p>
-          <p className="text-2xl font-bold font-mono mt-1">{totalRolls}</p>
+        <Card className="border-0 shadow-sm bg-white p-4">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Rolls</p>
+          <p className="text-2xl font-semibold font-mono mt-1">{totalRolls}</p>
         </Card>
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Total Value</p>
-          <p className="text-2xl font-bold font-mono mt-1 text-primary">
+        <Card className="border-0 shadow-sm bg-white p-4">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Value</p>
+          <p className="text-2xl font-semibold font-mono mt-1 text-primary">
             {totalValue.toFixed(2)}
           </p>
         </Card>

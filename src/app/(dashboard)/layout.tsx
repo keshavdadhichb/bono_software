@@ -18,7 +18,7 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-muted/30">
       {/* Desktop sidebar */}
       <aside className="hidden shrink-0 md:block">
         <AppSidebar
@@ -31,7 +31,7 @@ export default function DashboardLayout({
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" showCloseButton={false} className="w-[280px] p-0">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <MobileSidebar />
+          <MobileSidebar onNavigate={() => setMobileOpen(false)} />
         </SheetContent>
       </Sheet>
 
@@ -39,8 +39,8 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar onMobileMenuToggle={() => setMobileOpen((prev) => !prev)} />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto scroll-smooth">
+          <div className="mx-auto w-full max-w-[1400px] px-4 py-5 md:px-8 md:py-6">
             {children}
           </div>
         </main>

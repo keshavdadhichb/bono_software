@@ -325,11 +325,11 @@ export default function YarnPurchaseOrdersPage() {
 
   if (view === "list") {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold">Yarn Purchase Orders</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-xl font-semibold tracking-tight">Yarn Purchase Orders</h1>
+            <p className="text-[13px] text-muted-foreground">
               Manage yarn purchase orders
             </p>
           </div>
@@ -365,19 +365,19 @@ export default function YarnPurchaseOrdersPage() {
         </div>
 
         {/* Table */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>PO No</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Party</TableHead>
-                  <TableHead className="text-right">Total Qty</TableHead>
-                  <TableHead className="text-right">Total Amount</TableHead>
-                  <TableHead className="text-right">Net Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-[11px]">PO No</TableHead>
+                  <TableHead className="text-[11px]">Date</TableHead>
+                  <TableHead className="text-[11px]">Party</TableHead>
+                  <TableHead className="text-[11px] text-right">Total Qty</TableHead>
+                  <TableHead className="text-[11px] text-right">Total Amount</TableHead>
+                  <TableHead className="text-[11px] text-right">Net Amount</TableHead>
+                  <TableHead className="text-[11px]">Status</TableHead>
+                  <TableHead className="text-[11px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -401,18 +401,18 @@ export default function YarnPurchaseOrdersPage() {
                       className="cursor-pointer"
                       onClick={() => openEditForm(rec)}
                     >
-                      <TableCell className="font-medium">{rec.poNo}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px] font-medium">{rec.poNo}</TableCell>
+                      <TableCell className="text-[13px]">
                         {format(new Date(rec.poDate), "dd/MM/yyyy")}
                       </TableCell>
-                      <TableCell>{rec.party?.partyName}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-[13px]">{rec.party?.partyName}</TableCell>
+                      <TableCell className="text-[13px] text-right">
                         {rec.totalQty.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-[13px] text-right">
                         {rec.totalAmount.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-[13px] text-right">
                         {rec.netAmount.toFixed(2)}
                       </TableCell>
                       <TableCell>
@@ -448,7 +448,7 @@ export default function YarnPurchaseOrdersPage() {
   // =========================================================================
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button
@@ -462,10 +462,10 @@ export default function YarnPurchaseOrdersPage() {
           <ArrowLeft className="size-4" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-xl font-semibold tracking-tight">
             {editingId ? `Edit PO - ${poNo}` : "New Purchase Order"}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Yarn purchase order details
           </p>
         </div>
@@ -487,7 +487,7 @@ export default function YarnPurchaseOrdersPage() {
       </div>
 
       {/* Header fields */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardHeader>
           <CardTitle>PO Details</CardTitle>
         </CardHeader>
@@ -521,7 +521,7 @@ export default function YarnPurchaseOrdersPage() {
       </Card>
 
       {/* Items grid */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Items</CardTitle>
@@ -672,7 +672,7 @@ export default function YarnPurchaseOrdersPage() {
 
       {/* Footer */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 border-0 shadow-sm bg-white">
           <CardContent className="pt-4">
             <div className="space-y-1">
               <Label>Narration</Label>
@@ -686,7 +686,7 @@ export default function YarnPurchaseOrdersPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardHeader>
             <CardTitle>Summary</CardTitle>
           </CardHeader>

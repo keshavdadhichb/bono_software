@@ -445,12 +445,12 @@ export default function FabricProcessInwardPage() {
   // ---------- LIST VIEW ----------
   if (view === "list") {
     return (
-      <div className="p-4 md:p-6 space-y-4">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
             <Layers className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Fabric Process Inward</h1>
+            <h1 className="text-xl font-semibold tracking-tight">Fabric Process Inward</h1>
           </div>
           <Button size="sm" onClick={openNewForm}>
             <Plus className="h-4 w-4 mr-1" />
@@ -459,7 +459,7 @@ export default function FabricProcessInwardPage() {
         </div>
 
         {/* Filter Tabs */}
-        <Card className="p-4">
+        <Card className="p-4 border-0 shadow-sm bg-white">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-1">
               {PROCESS_TABS.map((tab) => (
@@ -487,20 +487,20 @@ export default function FabricProcessInwardPage() {
         </Card>
 
         {/* Table */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-28">DC No</TableHead>
-                  <TableHead className="w-24">Date</TableHead>
-                  <TableHead className="w-28">Process</TableHead>
-                  <TableHead>Party</TableHead>
-                  <TableHead className="w-28">PDC No</TableHead>
-                  <TableHead className="w-24">Store</TableHead>
-                  <TableHead className="w-24 text-right">Total Qty</TableHead>
-                  <TableHead className="w-20 text-right">Rolls</TableHead>
-                  <TableHead className="w-24 text-right">Net Amount</TableHead>
+                  <TableHead className="w-28 text-[11px]">DC No</TableHead>
+                  <TableHead className="w-24 text-[11px]">Date</TableHead>
+                  <TableHead className="w-28 text-[11px]">Process</TableHead>
+                  <TableHead className="text-[11px]">Party</TableHead>
+                  <TableHead className="w-28 text-[11px]">PDC No</TableHead>
+                  <TableHead className="w-24 text-[11px]">Store</TableHead>
+                  <TableHead className="w-24 text-[11px] text-right">Total Qty</TableHead>
+                  <TableHead className="w-20 text-[11px] text-right">Rolls</TableHead>
+                  <TableHead className="w-24 text-[11px] text-right">Net Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -528,30 +528,30 @@ export default function FabricProcessInwardPage() {
                       key={inward.id}
                       className="hover:bg-muted/50"
                     >
-                      <TableCell className="font-mono font-medium">
+                      <TableCell className="text-[13px] font-mono font-medium">
                         {inward.dcNo}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px]">
                         {format(new Date(inward.dcDate), "dd/MM/yyyy")}
                       </TableCell>
-                      <TableCell>{inward.processType}</TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="text-[13px]">{inward.processType}</TableCell>
+                      <TableCell className="text-[13px] font-medium">
                         {inward.party?.partyName || "-"}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
+                      <TableCell className="text-[13px] font-mono">
                         {inward.pdcNo || "-"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px]">
                         {stores.find((s) => s.id === inward.storeId)
                           ?.storeName || "-"}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-[13px] text-right font-mono">
                         {inward.totalQty.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-[13px] text-right font-mono">
                         {inward.totalRolls}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
+                      <TableCell className="text-[13px] text-right font-mono">
                         {inward.netAmount.toFixed(2)}
                       </TableCell>
                     </TableRow>
@@ -603,7 +603,7 @@ export default function FabricProcessInwardPage() {
 
   // ---------- FORM VIEW ----------
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Form Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -618,7 +618,7 @@ export default function FabricProcessInwardPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold">New Fabric Process Inward</h1>
+            <h1 className="text-xl font-semibold tracking-tight">New Fabric Process Inward</h1>
             <p className="text-sm text-muted-foreground">
               Receive fabric from process
             </p>
@@ -648,7 +648,7 @@ export default function FabricProcessInwardPage() {
       </div>
 
       {/* Header Fields */}
-      <Card className="p-4">
+      <Card className="p-4 border-0 shadow-sm bg-white">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* DC No (auto) */}
           <div className="space-y-1.5">
@@ -796,7 +796,7 @@ export default function FabricProcessInwardPage() {
       </Card>
 
       {/* Items */}
-      <Card className="p-4">
+      <Card className="p-4 border-0 shadow-sm bg-white">
         <h3 className="text-sm font-semibold mb-3">Inward Items</h3>
         <div className="overflow-x-auto">
           <Table>
@@ -949,7 +949,7 @@ export default function FabricProcessInwardPage() {
       </Card>
 
       {/* Footer */}
-      <Card className="p-4">
+      <Card className="p-4 border-0 shadow-sm bg-white">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
             <Label>Narration</Label>

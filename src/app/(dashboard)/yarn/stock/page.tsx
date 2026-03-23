@@ -162,12 +162,12 @@ export default function YarnStockPage() {
   // =========================================================================
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Yarn Stock Report</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-xl font-semibold tracking-tight">Yarn Stock Report</h1>
+          <p className="text-[13px] text-muted-foreground">
             Current yarn stock across all stores
           </p>
         </div>
@@ -179,43 +179,43 @@ export default function YarnStockPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Card size="sm">
+        <Card size="sm" className="border-0 shadow-sm bg-white">
           <CardContent className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Package className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Total Stock</p>
-              <p className="text-lg font-semibold">{totalKgs.toFixed(2)} Kgs</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Stock</p>
+              <p className="text-2xl font-semibold">{totalKgs.toFixed(2)} Kgs</p>
             </div>
           </CardContent>
         </Card>
-        <Card size="sm">
+        <Card size="sm" className="border-0 shadow-sm bg-white">
           <CardContent className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
               <Package className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Total Bags</p>
-              <p className="text-lg font-semibold">{totalBags}</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Bags</p>
+              <p className="text-2xl font-semibold">{totalBags}</p>
             </div>
           </CardContent>
         </Card>
-        <Card size="sm">
+        <Card size="sm" className="border-0 shadow-sm bg-white">
           <CardContent className="flex items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-green-500/10 text-green-600">
               <Package className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Total Value</p>
-              <p className="text-lg font-semibold">{totalValue.toFixed(2)}</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Value</p>
+              <p className="text-2xl font-semibold">{totalValue.toFixed(2)}</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card size="sm">
+      <Card size="sm" className="border-0 shadow-sm bg-white">
         <CardContent>
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
@@ -280,23 +280,23 @@ export default function YarnStockPage() {
       </Card>
 
       {/* Stock table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12 text-center">Sl</TableHead>
-                <TableHead>Lot No</TableHead>
-                <TableHead>Style No</TableHead>
-                <TableHead>Counts</TableHead>
-                <TableHead>Yarn Type</TableHead>
-                <TableHead>Mill</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead className="text-right">Stock Kgs</TableHead>
-                <TableHead className="text-right">No of Bags</TableHead>
-                <TableHead>UOM</TableHead>
-                <TableHead className="text-right">Rate</TableHead>
-                <TableHead className="text-right">Value</TableHead>
+                <TableHead className="w-12 text-center text-[11px] uppercase tracking-wide">Sl</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Lot No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Style No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Counts</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Yarn Type</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Mill</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Color</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">Stock Kgs</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">No of Bags</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">UOM</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">Rate</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -316,22 +316,22 @@ export default function YarnStockPage() {
               ) : (
                 stock.map((item, idx) => (
                   <TableRow key={item.id}>
-                    <TableCell className="text-center text-muted-foreground">
+                    <TableCell className="text-center text-[13px] text-muted-foreground">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-medium">{item.lotNo}</TableCell>
-                    <TableCell>{item.styleNo || "-"}</TableCell>
-                    <TableCell>{item.counts}</TableCell>
-                    <TableCell>{item.yarnType}</TableCell>
-                    <TableCell>{item.millName || "-"}</TableCell>
-                    <TableCell>{item.color || "-"}</TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-[13px] font-medium">{item.lotNo}</TableCell>
+                    <TableCell className="text-[13px]">{item.styleNo || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.counts}</TableCell>
+                    <TableCell className="text-[13px]">{item.yarnType}</TableCell>
+                    <TableCell className="text-[13px]">{item.millName || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.color || "-"}</TableCell>
+                    <TableCell className="text-right text-[13px] font-medium">
                       {item.stockKgs.toFixed(2)}
                     </TableCell>
-                    <TableCell className="text-right">{item.noOfBags}</TableCell>
-                    <TableCell>{item.uom}</TableCell>
-                    <TableCell className="text-right">{item.rate.toFixed(2)}</TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-right text-[13px]">{item.noOfBags}</TableCell>
+                    <TableCell className="text-[13px]">{item.uom}</TableCell>
+                    <TableCell className="text-right text-[13px]">{item.rate.toFixed(2)}</TableCell>
+                    <TableCell className="text-right text-[13px] font-medium">
                       {(item.stockKgs * item.rate).toFixed(2)}
                     </TableCell>
                   </TableRow>

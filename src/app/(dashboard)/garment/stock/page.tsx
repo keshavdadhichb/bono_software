@@ -157,12 +157,12 @@ export default function GarmentStockPage() {
   // ---- Render ----
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Garment Stock</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-xl font-semibold tracking-tight">Garment Stock</h1>
+          <p className="text-[13px] text-muted-foreground">
             View current garment stock across stores and process stages
           </p>
         </div>
@@ -173,7 +173,7 @@ export default function GarmentStockPage() {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             <div className="space-y-2">
@@ -244,32 +244,32 @@ export default function GarmentStockPage() {
 
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="py-4">
+        <Card className="border-0 shadow-sm bg-white py-4">
           <CardContent className="flex items-center gap-3">
             <div className="rounded-lg bg-blue-50 p-2.5 ring-1 ring-blue-100">
               <Package className="size-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Total Items</p>
-              <p className="text-xl font-bold">{stock.length}</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Items</p>
+              <p className="text-2xl font-semibold">{stock.length}</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="py-4">
+        <Card className="border-0 shadow-sm bg-white py-4">
           <CardContent className="flex items-center gap-3">
             <div className="rounded-lg bg-green-50 p-2.5 ring-1 ring-green-100">
               <Layers className="size-5 text-green-600" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Total Qty</p>
-              <p className="text-xl font-bold">{totalQty}</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Qty</p>
+              <p className="text-2xl font-semibold">{totalQty}</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Stock Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-20 text-muted-foreground">
@@ -298,30 +298,30 @@ export default function GarmentStockPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Lot No</TableHead>
-                          <TableHead>Style Ref</TableHead>
-                          <TableHead>Style Type</TableHead>
-                          <TableHead>Part</TableHead>
-                          <TableHead>Color</TableHead>
-                          <TableHead>Size</TableHead>
-                          <TableHead className="text-right">Qty</TableHead>
-                          <TableHead>UOM</TableHead>
-                          <TableHead>Stage</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Lot No</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Style Ref</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Style Type</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Part</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Color</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Size</TableHead>
+                          <TableHead className="text-right text-[11px] uppercase tracking-wide">Qty</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">UOM</TableHead>
+                          <TableHead className="text-[11px] uppercase tracking-wide">Stage</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {items.map((item) => (
                           <TableRow key={item.id}>
-                            <TableCell>{item.lotNo}</TableCell>
-                            <TableCell>{item.styleRef || "-"}</TableCell>
-                            <TableCell>{item.styleType || "-"}</TableCell>
-                            <TableCell>{item.part || "-"}</TableCell>
-                            <TableCell>{item.color || "-"}</TableCell>
-                            <TableCell>{item.size || "-"}</TableCell>
-                            <TableCell className="text-right font-medium">
+                            <TableCell className="text-[13px]">{item.lotNo}</TableCell>
+                            <TableCell className="text-[13px]">{item.styleRef || "-"}</TableCell>
+                            <TableCell className="text-[13px]">{item.styleType || "-"}</TableCell>
+                            <TableCell className="text-[13px]">{item.part || "-"}</TableCell>
+                            <TableCell className="text-[13px]">{item.color || "-"}</TableCell>
+                            <TableCell className="text-[13px]">{item.size || "-"}</TableCell>
+                            <TableCell className="text-right text-[13px] font-medium">
                               {item.qty}
                             </TableCell>
-                            <TableCell>{item.uom}</TableCell>
+                            <TableCell className="text-[13px]">{item.uom}</TableCell>
                             <TableCell>
                               {item.process ? (
                                 <Badge variant="outline" className="text-xs">
@@ -344,34 +344,34 @@ export default function GarmentStockPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Lot No</TableHead>
-                  <TableHead>Style No</TableHead>
-                  <TableHead>Style Ref</TableHead>
-                  <TableHead>Style Type</TableHead>
-                  <TableHead>Part</TableHead>
-                  <TableHead>Color</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead className="text-right">Qty</TableHead>
-                  <TableHead>UOM</TableHead>
-                  <TableHead>Stage</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Lot No</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Style No</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Style Ref</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Style Type</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Part</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Color</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Size</TableHead>
+                  <TableHead className="text-right text-[11px] uppercase tracking-wide">Qty</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">UOM</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Stage</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {stock.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.lotNo}</TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px]">{item.lotNo}</TableCell>
+                    <TableCell className="text-[13px] font-medium">
                       {item.styleNo || "-"}
                     </TableCell>
-                    <TableCell>{item.styleRef || "-"}</TableCell>
-                    <TableCell>{item.styleType || "-"}</TableCell>
-                    <TableCell>{item.part || "-"}</TableCell>
-                    <TableCell>{item.color || "-"}</TableCell>
-                    <TableCell>{item.size || "-"}</TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-[13px]">{item.styleRef || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.styleType || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.part || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.color || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.size || "-"}</TableCell>
+                    <TableCell className="text-right text-[13px] font-medium">
                       {item.qty}
                     </TableCell>
-                    <TableCell>{item.uom}</TableCell>
+                    <TableCell className="text-[13px]">{item.uom}</TableCell>
                     <TableCell>
                       {item.process ? (
                         <Badge variant="outline" className="text-xs">

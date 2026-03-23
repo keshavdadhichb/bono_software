@@ -126,11 +126,11 @@ export default function YarnSalesPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Receipt className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Yarn Sales</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Yarn Sales</h1>
         </div>
         <Button size="sm" onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> New Sale</Button>
       </div>
@@ -142,17 +142,17 @@ export default function YarnSalesPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Bill No</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Party</TableHead>
-                <TableHead className="text-right">Qty (Kgs)</TableHead>
-                <TableHead className="text-right">Net Amount</TableHead>
+                <TableHead className="text-[11px]">Bill No</TableHead>
+                <TableHead className="text-[11px]">Date</TableHead>
+                <TableHead className="text-[11px]">Type</TableHead>
+                <TableHead className="text-[11px]">Party</TableHead>
+                <TableHead className="text-[11px] text-right">Qty (Kgs)</TableHead>
+                <TableHead className="text-[11px] text-right">Net Amount</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -162,12 +162,12 @@ export default function YarnSalesPage() {
                 <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No sales found.</TableCell></TableRow>
               ) : sales.map((s) => (
                 <TableRow key={s.id}>
-                  <TableCell className="font-medium">{s.billNo}</TableCell>
-                  <TableCell>{new Date(s.billDate).toLocaleDateString()}</TableCell>
-                  <TableCell><span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${typeBadge[s.billType] || ""}`}>{s.billType}</span></TableCell>
-                  <TableCell>{s.party.partyName}</TableCell>
-                  <TableCell className="text-right">{s.totalQty.toFixed(2)}</TableCell>
-                  <TableCell className="text-right font-medium">{s.netAmount.toFixed(2)}</TableCell>
+                  <TableCell className="text-[13px] font-medium">{s.billNo}</TableCell>
+                  <TableCell className="text-[13px]">{new Date(s.billDate).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-[13px]"><span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${typeBadge[s.billType] || ""}`}>{s.billType}</span></TableCell>
+                  <TableCell className="text-[13px]">{s.party.partyName}</TableCell>
+                  <TableCell className="text-[13px] text-right">{s.totalQty.toFixed(2)}</TableCell>
+                  <TableCell className="text-[13px] text-right font-medium">{s.netAmount.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

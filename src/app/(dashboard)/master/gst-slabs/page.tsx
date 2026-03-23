@@ -152,29 +152,29 @@ export default function GstSlabsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">GST Tax Slabs</h1>
-        <Button size="sm" onClick={openAddDialog}>
+        <h1 className="text-xl font-semibold tracking-tight">GST Tax Slabs</h1>
+        <Button size="sm" className="h-8 text-[13px]" onClick={openAddDialog}>
           <Plus className="h-4 w-4 mr-1" />
           Add GST Slab
         </Button>
       </div>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Tax Name</TableHead>
-                <TableHead className="w-24 text-right">CGST %</TableHead>
-                <TableHead className="w-24 text-right">SGST %</TableHead>
-                <TableHead className="w-24 text-right">Total %</TableHead>
-                <TableHead className="w-32">HSN Code</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Tax Name</TableHead>
+                <TableHead className="w-24 text-right text-[11px] uppercase tracking-wide">CGST %</TableHead>
+                <TableHead className="w-24 text-right text-[11px] uppercase tracking-wide">SGST %</TableHead>
+                <TableHead className="w-24 text-right text-[11px] uppercase tracking-wide">Total %</TableHead>
+                <TableHead className="w-32 text-[11px] uppercase tracking-wide">HSN Code</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -204,22 +204,22 @@ export default function GstSlabsPage() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => openEditDialog(item)}
                   >
-                    <TableCell className="font-mono text-muted-foreground">
+                    <TableCell className="text-[13px] font-mono text-muted-foreground">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {item.taxName}
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-[13px] text-right font-mono">
                       {item.cgstRate}%
                     </TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell className="text-[13px] text-right font-mono">
                       {item.sgstRate}%
                     </TableCell>
-                    <TableCell className="text-right font-mono font-semibold">
+                    <TableCell className="text-[13px] text-right font-mono font-semibold">
                       {(item.cgstRate + item.sgstRate).toFixed(2)}%
                     </TableCell>
-                    <TableCell className="font-mono text-xs">
+                    <TableCell className="text-[13px] font-mono">
                       {item.hsnCode || "-"}
                     </TableCell>
                     <TableCell className="text-right">
@@ -268,7 +268,7 @@ export default function GstSlabsPage() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <Label htmlFor="taxName">
+              <Label htmlFor="taxName" className="text-[13px]">
                 Tax Name <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -280,7 +280,7 @@ export default function GstSlabsPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="cgstRate">
+                <Label htmlFor="cgstRate" className="text-[13px]">
                   CGST % <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -293,7 +293,7 @@ export default function GstSlabsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="sgstRate">
+                <Label htmlFor="sgstRate" className="text-[13px]">
                   SGST % <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -319,7 +319,7 @@ export default function GstSlabsPage() {
               </p>
             )}
             <div className="space-y-1.5">
-              <Label htmlFor="hsnCode">HSN Code</Label>
+              <Label htmlFor="hsnCode" className="text-[13px]">HSN Code</Label>
               <Input
                 id="hsnCode"
                 value={form.hsnCode}

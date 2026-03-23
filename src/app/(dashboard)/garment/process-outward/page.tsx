@@ -372,17 +372,17 @@ export default function GarmentProcessOutwardPage() {
             <ChevronLeft className="size-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight">
               {editingId ? "Edit" : "New"} Garment Process Outward
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[13px] text-muted-foreground">
               DC No: {form.dcNo}
             </p>
           </div>
         </div>
 
         {/* Form Fields */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
@@ -476,7 +476,7 @@ export default function GarmentProcessOutwardPage() {
         </Card>
 
         {/* Items Grid */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Items</CardTitle>
             <Button size="sm" variant="outline" onClick={handleAddRow}>
@@ -635,7 +635,7 @@ export default function GarmentProcessOutwardPage() {
         </Card>
 
         {/* Footer fields */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2 sm:col-span-2">
@@ -711,10 +711,10 @@ export default function GarmentProcessOutwardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight">
             Garment Process Outward
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Manage outward delivery challans for garment processes
           </p>
         </div>
@@ -747,7 +747,7 @@ export default function GarmentProcessOutwardPage() {
       </div>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-20 text-muted-foreground">
@@ -771,12 +771,12 @@ export default function GarmentProcessOutwardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>DC No</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Process</TableHead>
-                  <TableHead>Party</TableHead>
-                  <TableHead className="text-right">Total Qty</TableHead>
-                  <TableHead className="text-right">Status</TableHead>
+                  <TableHead className="text-[11px]">DC No</TableHead>
+                  <TableHead className="text-[11px]">Date</TableHead>
+                  <TableHead className="text-[11px]">Process</TableHead>
+                  <TableHead className="text-[11px]">Party</TableHead>
+                  <TableHead className="text-[11px] text-right">Total Qty</TableHead>
+                  <TableHead className="text-[11px] text-right">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -786,20 +786,20 @@ export default function GarmentProcessOutwardPage() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleEdit(outward)}
                   >
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {outward.dcNo}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-[13px]">
                       {format(new Date(outward.dcDate), "dd MMM yyyy")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-[13px]">
                       <Badge variant="secondary" className="text-xs">
                         <Truck className="size-3 mr-1" />
                         {outward.processType}
                       </Badge>
                     </TableCell>
-                    <TableCell>{outward.party.partyName}</TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-[13px]">{outward.party.partyName}</TableCell>
+                    <TableCell className="text-[13px] text-right font-medium">
                       {outward.totalQty}
                     </TableCell>
                     <TableCell className="text-right">

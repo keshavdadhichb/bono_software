@@ -7,7 +7,6 @@ import { useSession, signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Tooltip,
@@ -138,7 +137,6 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
   >(() => {
-    // Auto-open the section that contains the current route
     const initial: Record<string, boolean> = {}
     for (const group of navigation) {
       if (group.children) {
@@ -164,32 +162,36 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col border-r border-border bg-sidebar text-sidebar-foreground transition-[width] duration-300 ease-in-out",
-        collapsed ? "w-[68px]" : "w-[260px]"
+        "relative flex h-full flex-col border-r border-sidebar-border bg-white text-sidebar-foreground transition-[width] duration-200 ease-out",
+        collapsed ? "w-[68px]" : "w-[256px]"
       )}
     >
       {/* Logo / Brand */}
-      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+      <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-4">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
           <Scissors className="size-4" />
         </div>
         {!collapsed && (
-          <span className="text-base font-semibold tracking-tight whitespace-nowrap">
-            BonoStyle
-          </span>
+          <div className="flex flex-col whitespace-nowrap">
+            <span className="text-sm font-semibold tracking-tight leading-tight">
+              BonoStyle
+            </span>
+            <span className="text-[10px] text-muted-foreground leading-tight">
+              Creations LLP
+            </span>
+          </div>
         )}
       </div>
 
       {/* Navigation */}
       <ScrollArea className="flex-1 overflow-y-auto">
-        <nav className="flex flex-col gap-1 p-2">
+        <nav className="flex flex-col gap-0.5 px-2 py-3">
           <TooltipProvider>
             {navigation.map((group) => {
               const Icon = group.icon
               const active = isSectionActive(group)
               const isOpen = openSections[group.label] ?? false
 
-              // Single link (no children)
               if (group.href) {
                 const linkActive = isLinkActive(group.href)
                 return (
@@ -199,19 +201,19 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                         <Link
                           href={group.href}
                           className={cn(
-                            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                            "flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150",
                             linkActive
-                              ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                              ? "bg-primary/10 text-primary shadow-sm"
+                              : "text-muted-foreground hover:bg-accent hover:text-foreground"
                           )}
                         />
                       }
                     >
-                      <Icon className="size-4 shrink-0" />
+                      <Icon className={cn("size-4 shrink-0", linkActive && "text-primary")} />
                       {!collapsed && <span>{group.label}</span>}
                     </TooltipTrigger>
                     {collapsed && (
-                      <TooltipContent side="right">
+                      <TooltipContent side="right" sideOffset={8}>
                         {group.label}
                       </TooltipContent>
                     )}
@@ -219,7 +221,6 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                 )
               }
 
-              // Section with children
               return (
                 <div key={group.label} className="flex flex-col">
                   <Tooltip>
@@ -232,21 +233,21 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                             toggleSection(group.label)
                           }}
                           className={cn(
-                            "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                            "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150",
                             active
-                              ? "text-sidebar-accent-foreground"
-                              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                              ? "text-foreground"
+                              : "text-muted-foreground hover:bg-accent hover:text-foreground"
                           )}
                         />
                       }
                     >
-                      <Icon className="size-4 shrink-0" />
+                      <Icon className={cn("size-4 shrink-0", active && "text-primary")} />
                       {!collapsed && (
                         <>
                           <span className="flex-1 text-left">{group.label}</span>
                           <ChevronDown
                             className={cn(
-                              "size-3.5 shrink-0 text-muted-foreground transition-transform duration-200",
+                              "size-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200",
                               isOpen && "rotate-180"
                             )}
                           />
@@ -254,22 +255,21 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                       )}
                     </TooltipTrigger>
                     {collapsed && (
-                      <TooltipContent side="right">
+                      <TooltipContent side="right" sideOffset={8}>
                         {group.label}
                       </TooltipContent>
                     )}
                   </Tooltip>
 
-                  {/* Sub-items */}
                   {!collapsed && (
                     <div
                       className={cn(
-                        "grid transition-[grid-template-rows] duration-200 ease-in-out",
+                        "grid transition-[grid-template-rows] duration-200 ease-out",
                         isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                       )}
                     >
                       <div className="overflow-hidden">
-                        <div className="ml-4 flex flex-col gap-0.5 border-l border-border pl-3 pt-1 pb-1">
+                        <div className="ml-[22px] flex flex-col gap-px border-l border-border/60 pl-3 pt-0.5 pb-1">
                           {group.children!.map((child) => {
                             const childActive = isLinkActive(child.href)
                             return (
@@ -277,10 +277,10 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                                 key={child.href}
                                 href={child.href}
                                 className={cn(
-                                  "rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
+                                  "rounded-md px-2.5 py-[6px] text-[13px] transition-all duration-150",
                                   childActive
-                                    ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                                    ? "bg-primary/10 font-medium text-primary"
+                                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                 )}
                               >
                                 {child.label}
@@ -299,16 +299,16 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       </ScrollArea>
 
       {/* Collapse toggle */}
-      <div className="hidden border-t border-border p-2 md:block">
+      <div className="hidden border-t border-sidebar-border p-2 md:block">
         <Button
           variant="ghost"
           size="icon-sm"
           onClick={onToggle}
-          className="w-full"
+          className="w-full text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft
             className={cn(
-              "size-4 transition-transform duration-300",
+              "size-4 transition-transform duration-200",
               collapsed && "rotate-180"
             )}
           />
@@ -316,40 +316,41 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       </div>
 
       {/* User section */}
-      <Separator />
-      <div className="flex shrink-0 items-center gap-3 p-3">
-        <Avatar size="sm">
-          <AvatarImage src={session?.user?.image ?? undefined} />
-          <AvatarFallback>
-            {getInitials(session?.user?.name)}
-          </AvatarFallback>
-        </Avatar>
-        {!collapsed && (
-          <div className="flex flex-1 items-center justify-between gap-1 overflow-hidden">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium leading-tight">
-                {session?.user?.name ?? "User"}
-              </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {session?.user?.email ?? ""}
-              </p>
+      <div className="border-t border-sidebar-border">
+        <div className="flex shrink-0 items-center gap-2.5 px-3 py-2.5">
+          <Avatar size="sm">
+            <AvatarImage src={session?.user?.image ?? undefined} />
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+              {getInitials(session?.user?.name)}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <div className="flex flex-1 items-center justify-between gap-1 overflow-hidden">
+              <div className="min-w-0">
+                <p className="truncate text-[13px] font-medium leading-tight">
+                  {session?.user?.name ?? "User"}
+                </p>
+                <p className="truncate text-[11px] text-muted-foreground leading-tight">
+                  {session?.user?.email ?? ""}
+                </p>
+              </div>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => signOut({ callbackUrl: "/login" })}
+                      className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    />
+                  }
+                >
+                  <LogOut className="size-3.5" />
+                </TooltipTrigger>
+                <TooltipContent side="top">Sign out</TooltipContent>
+              </Tooltip>
             </div>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <button
-                    type="button"
-                    onClick={() => signOut({ callbackUrl: "/login" })}
-                    className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  />
-                }
-              >
-                <LogOut className="size-3.5" />
-              </TooltipTrigger>
-              <TooltipContent side="top">Sign out</TooltipContent>
-            </Tooltip>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
@@ -357,7 +358,11 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
 // ---------- Mobile sidebar wrapper ----------
 
-export function MobileSidebar() {
+interface MobileSidebarProps {
+  onNavigate?: () => void
+}
+
+export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
 
@@ -387,22 +392,25 @@ export function MobileSidebar() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-white">
       {/* Logo */}
-      <div className="flex h-14 items-center gap-2 px-4">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+      <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
           <Scissors className="size-4" />
         </div>
-        <span className="text-base font-semibold tracking-tight">
-          BonoStyle
-        </span>
+        <div className="flex flex-col">
+          <span className="text-sm font-semibold tracking-tight leading-tight">
+            BonoStyle
+          </span>
+          <span className="text-[10px] text-muted-foreground leading-tight">
+            Creations LLP
+          </span>
+        </div>
       </div>
-
-      <Separator />
 
       {/* Navigation */}
       <ScrollArea className="flex-1">
-        <nav className="flex flex-col gap-1 p-2">
+        <nav className="flex flex-col gap-0.5 px-2 py-3">
           {navigation.map((group) => {
             const Icon = group.icon
             const active = isSectionActive(group)
@@ -414,14 +422,15 @@ export function MobileSidebar() {
                 <Link
                   key={group.label}
                   href={group.href}
+                  onClick={onNavigate}
                   className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
                     linkActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   )}
                 >
-                  <Icon className="size-4 shrink-0" />
+                  <Icon className={cn("size-4 shrink-0", linkActive && "text-primary")} />
                   <span>{group.label}</span>
                 </Link>
               )
@@ -433,17 +442,17 @@ export function MobileSidebar() {
                   type="button"
                   onClick={() => toggleSection(group.label)}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
                     active
-                      ? "text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   )}
                 >
-                  <Icon className="size-4 shrink-0" />
+                  <Icon className={cn("size-4 shrink-0", active && "text-primary")} />
                   <span className="flex-1 text-left">{group.label}</span>
                   <ChevronDown
                     className={cn(
-                      "size-3.5 text-muted-foreground transition-transform duration-200",
+                      "size-3.5 text-muted-foreground/60 transition-transform duration-200",
                       isOpen && "rotate-180"
                     )}
                   />
@@ -451,23 +460,24 @@ export function MobileSidebar() {
 
                 <div
                   className={cn(
-                    "grid transition-[grid-template-rows] duration-200 ease-in-out",
+                    "grid transition-[grid-template-rows] duration-200 ease-out",
                     isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                   )}
                 >
                   <div className="overflow-hidden">
-                    <div className="ml-4 flex flex-col gap-0.5 border-l border-border pl-3 pt-1 pb-1">
+                    <div className="ml-[22px] flex flex-col gap-px border-l border-border/60 pl-3 pt-0.5 pb-1">
                       {group.children!.map((child) => {
                         const childActive = isLinkActive(child.href)
                         return (
                           <Link
                             key={child.href}
                             href={child.href}
+                            onClick={onNavigate}
                             className={cn(
-                              "rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
+                              "rounded-md px-2.5 py-[7px] text-[13px] transition-all duration-150",
                               childActive
-                                ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                                : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                                ? "bg-primary/10 font-medium text-primary"
+                                : "text-muted-foreground hover:bg-accent hover:text-foreground"
                             )}
                           >
                             {child.label}
@@ -484,30 +494,31 @@ export function MobileSidebar() {
       </ScrollArea>
 
       {/* User */}
-      <Separator />
-      <div className="flex items-center gap-3 p-3">
-        <Avatar size="sm">
-          <AvatarImage src={session?.user?.image ?? undefined} />
-          <AvatarFallback>
-            {getInitials(session?.user?.name)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex flex-1 items-center justify-between gap-1 overflow-hidden">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium leading-tight">
-              {session?.user?.name ?? "User"}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {session?.user?.email ?? ""}
-            </p>
+      <div className="border-t border-border">
+        <div className="flex items-center gap-2.5 px-3 py-2.5">
+          <Avatar size="sm">
+            <AvatarImage src={session?.user?.image ?? undefined} />
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+              {getInitials(session?.user?.name)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-1 items-center justify-between gap-1 overflow-hidden">
+            <div className="min-w-0">
+              <p className="truncate text-[13px] font-medium leading-tight">
+                {session?.user?.name ?? "User"}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground leading-tight">
+                {session?.user?.email ?? ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            >
+              <LogOut className="size-3.5" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <LogOut className="size-3.5" />
-          </button>
         </div>
       </div>
     </div>

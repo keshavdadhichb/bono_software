@@ -52,11 +52,11 @@ export default function AccessoryStockPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Package className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Accessory Stock</h1>
+          <Package className="size-5 text-primary" />
+          <h1 className="text-xl font-semibold tracking-tight">Accessory Stock</h1>
         </div>
         <Button size="sm" variant="outline" onClick={exportExcel} disabled={stock.length === 0}>
           <Download className="h-4 w-4 mr-1" /> Export
@@ -64,34 +64,34 @@ export default function AccessoryStockPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card><CardContent className="pt-4">
-          <p className="text-xs text-muted-foreground">Total Items</p>
-          <p className="text-2xl font-bold">{summary.totalItems}</p>
+        <Card className="border-0 shadow-sm bg-white"><CardContent className="pt-4">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Items</p>
+          <p className="text-2xl font-semibold">{summary.totalItems}</p>
         </CardContent></Card>
-        <Card><CardContent className="pt-4">
-          <p className="text-xs text-muted-foreground">Total Qty</p>
-          <p className="text-2xl font-bold">{summary.totalQty.toFixed(2)}</p>
+        <Card className="border-0 shadow-sm bg-white"><CardContent className="pt-4">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Qty</p>
+          <p className="text-2xl font-semibold">{summary.totalQty.toFixed(2)}</p>
         </CardContent></Card>
-        <Card><CardContent className="pt-4">
-          <p className="text-xs text-muted-foreground">Total Weight</p>
-          <p className="text-2xl font-bold">{summary.totalWeight.toFixed(2)}</p>
+        <Card className="border-0 shadow-sm bg-white"><CardContent className="pt-4">
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Total Weight</p>
+          <p className="text-2xl font-semibold">{summary.totalWeight.toFixed(2)}</p>
         </CardContent></Card>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Lot No</TableHead>
-                <TableHead>Style No</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Weight</TableHead>
-                <TableHead>UOM</TableHead>
-                <TableHead className="text-right">Rate</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Lot No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Style No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Color</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Size</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">Qty</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">Weight</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">UOM</TableHead>
+                <TableHead className="text-right text-[11px] uppercase tracking-wide">Rate</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -101,15 +101,15 @@ export default function AccessoryStockPage() {
                 <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No accessory stock found.</TableCell></TableRow>
               ) : stock.map((s, idx) => (
                 <TableRow key={s.id}>
-                  <TableCell className="font-mono text-muted-foreground">{idx + 1}</TableCell>
-                  <TableCell className="font-medium">{s.lotNo}</TableCell>
-                  <TableCell>{s.styleNo || "-"}</TableCell>
-                  <TableCell>{s.accColor || "-"}</TableCell>
-                  <TableCell>{s.accSize || "-"}</TableCell>
-                  <TableCell className="text-right">{s.qty}</TableCell>
-                  <TableCell className="text-right">{s.weight}</TableCell>
-                  <TableCell>{s.uom}</TableCell>
-                  <TableCell className="text-right">{s.rate.toFixed(2)}</TableCell>
+                  <TableCell className="text-[13px] font-mono text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="text-[13px] font-medium">{s.lotNo}</TableCell>
+                  <TableCell className="text-[13px]">{s.styleNo || "-"}</TableCell>
+                  <TableCell className="text-[13px]">{s.accColor || "-"}</TableCell>
+                  <TableCell className="text-[13px]">{s.accSize || "-"}</TableCell>
+                  <TableCell className="text-right text-[13px]">{s.qty}</TableCell>
+                  <TableCell className="text-right text-[13px]">{s.weight}</TableCell>
+                  <TableCell className="text-[13px]">{s.uom}</TableCell>
+                  <TableCell className="text-right text-[13px]">{s.rate.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -138,26 +138,26 @@ export default function YarnTypesPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Yarn Types</h1>
-        <Button size="sm" onClick={openAddDialog}>
+        <h1 className="text-xl font-semibold tracking-tight">Yarn Types</h1>
+        <Button size="sm" className="h-8 text-[13px]" onClick={openAddDialog}>
           <Plus className="h-4 w-4 mr-1" />
           Add Yarn Type
         </Button>
       </div>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Type Name</TableHead>
-                <TableHead className="w-20">Status</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Type Name</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Status</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -187,15 +187,16 @@ export default function YarnTypesPage() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => openEditDialog(item)}
                   >
-                    <TableCell className="font-mono text-muted-foreground">
+                    <TableCell className="text-[13px] font-mono text-muted-foreground">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {item.typeName}
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant={item.isActive ? "default" : "secondary"}
+                        className="border"
                       >
                         {item.isActive ? "Active" : "Inactive"}
                       </Badge>
@@ -246,7 +247,7 @@ export default function YarnTypesPage() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <Label htmlFor="typeName">
+              <Label htmlFor="typeName" className="text-[13px]">
                 Type Name <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -264,7 +265,7 @@ export default function YarnTypesPage() {
                 onChange={(e) => updateForm("isActive", e.target.checked)}
                 className="h-4 w-4 rounded border-gray-300"
               />
-              <Label htmlFor="isActive">Active</Label>
+              <Label htmlFor="isActive" className="text-[13px]">Active</Label>
             </div>
           </div>
 

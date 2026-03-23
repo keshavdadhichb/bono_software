@@ -85,24 +85,24 @@ export default function ConcernsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Building2 className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Concerns</h1>
+          <Building2 className="size-5 text-primary" />
+          <h1 className="text-xl font-semibold tracking-tight">Concerns</h1>
         </div>
-        <Button size="sm" onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Concern</Button>
+        <Button size="sm" className="h-8 text-[13px]" onClick={openAdd}><Plus className="h-4 w-4 mr-1" /> Add Concern</Button>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Concern Name</TableHead>
-                <TableHead className="w-20">Status</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Concern Name</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Status</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -112,9 +112,9 @@ export default function ConcernsPage() {
                 <TableRow><TableCell colSpan={4} className="text-center py-12 text-muted-foreground">No concerns found.</TableCell></TableRow>
               ) : items.map((item, idx) => (
                 <TableRow key={item.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openEdit(item)}>
-                  <TableCell className="font-mono text-muted-foreground">{idx + 1}</TableCell>
-                  <TableCell className="font-medium">{item.concernName}</TableCell>
-                  <TableCell><Badge variant={item.isActive ? "default" : "secondary"}>{item.isActive ? "Active" : "Inactive"}</Badge></TableCell>
+                  <TableCell className="text-[13px] font-mono text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="text-[13px] font-medium">{item.concernName}</TableCell>
+                  <TableCell><Badge variant={item.isActive ? "default" : "secondary"} className="border">{item.isActive ? "Active" : "Inactive"}</Badge></TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); openEdit(item); }}><Edit className="h-4 w-4" /></Button>
@@ -133,12 +133,12 @@ export default function ConcernsPage() {
           <DialogHeader><DialogTitle>{editing ? "Edit Concern" : "Add Concern"}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <Label>Concern Name <span className="text-destructive">*</span></Label>
+              <Label className="text-[13px]">Concern Name <span className="text-destructive">*</span></Label>
               <Input value={form.concernName} onChange={(e) => setForm({ ...form, concernName: e.target.value })} placeholder="Enter concern name" />
             </div>
             <div className="flex items-center gap-2">
               <input type="checkbox" id="isActive" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="h-4 w-4 rounded border-gray-300" />
-              <Label htmlFor="isActive">Active</Label>
+              <Label htmlFor="isActive" className="text-[13px]">Active</Label>
             </div>
           </div>
           <div className="flex justify-end gap-2">

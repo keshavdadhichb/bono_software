@@ -103,10 +103,10 @@ export default function AccessoryMastersPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Package className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-bold">Accessory Masters</h1>
+        <Package className="size-5 text-primary" />
+        <h1 className="text-xl font-semibold tracking-tight">Accessory Masters</h1>
       </div>
 
       <Tabs defaultValue="groups">
@@ -119,16 +119,16 @@ export default function AccessoryMastersPage() {
           <div className="flex justify-end">
             <Button size="sm" onClick={openAddGroup}><Plus className="h-4 w-4 mr-1" /> Add Group</Button>
           </div>
-          <Card>
+          <Card className="border-0 shadow-sm bg-white">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-14">S.No</TableHead>
-                  <TableHead>Group Name</TableHead>
-                  <TableHead>HSN Code</TableHead>
-                  <TableHead>GST %</TableHead>
-                  <TableHead>Items</TableHead>
-                  <TableHead className="w-20 text-right">Actions</TableHead>
+                  <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Group Name</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">HSN Code</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">GST %</TableHead>
+                  <TableHead className="text-[11px] uppercase tracking-wide">Items</TableHead>
+                  <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,10 +138,10 @@ export default function AccessoryMastersPage() {
                   <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No groups found.</TableCell></TableRow>
                 ) : groups.map((g, idx) => (
                   <TableRow key={g.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openEditGroup(g)}>
-                    <TableCell className="font-mono text-muted-foreground">{idx + 1}</TableCell>
-                    <TableCell className="font-medium">{g.groupName}</TableCell>
-                    <TableCell>{g.hsnCode || "-"}</TableCell>
-                    <TableCell>{g.gstPercent}%</TableCell>
+                    <TableCell className="text-[13px] font-mono text-muted-foreground">{idx + 1}</TableCell>
+                    <TableCell className="text-[13px] font-medium">{g.groupName}</TableCell>
+                    <TableCell className="text-[13px]">{g.hsnCode || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{g.gstPercent}%</TableCell>
                     <TableCell><Badge variant="secondary">{g._count.items}</Badge></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -160,19 +160,19 @@ export default function AccessoryMastersPage() {
           <div className="flex justify-end">
             <Button size="sm" onClick={openAddMaster}><Plus className="h-4 w-4 mr-1" /> Add Item</Button>
           </div>
-          <Card>
+          <Card className="border-0 shadow-sm bg-white">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-14">S.No</TableHead>
-                    <TableHead>Accessory Name</TableHead>
-                    <TableHead>Group</TableHead>
-                    <TableHead className="hidden md:table-cell">Purchase UOM</TableHead>
-                    <TableHead className="hidden md:table-cell">Stock UOM</TableHead>
-                    <TableHead className="hidden md:table-cell">Min Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-20 text-right">Actions</TableHead>
+                    <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                    <TableHead className="text-[11px] uppercase tracking-wide">Accessory Name</TableHead>
+                    <TableHead className="text-[11px] uppercase tracking-wide">Group</TableHead>
+                    <TableHead className="hidden md:table-cell text-[11px] uppercase tracking-wide">Purchase UOM</TableHead>
+                    <TableHead className="hidden md:table-cell text-[11px] uppercase tracking-wide">Stock UOM</TableHead>
+                    <TableHead className="hidden md:table-cell text-[11px] uppercase tracking-wide">Min Stock</TableHead>
+                    <TableHead className="text-[11px] uppercase tracking-wide">Status</TableHead>
+                    <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -182,12 +182,12 @@ export default function AccessoryMastersPage() {
                     <TableRow><TableCell colSpan={8} className="text-center py-12 text-muted-foreground">No items found.</TableCell></TableRow>
                   ) : masters.map((m, idx) => (
                     <TableRow key={m.id} className="cursor-pointer hover:bg-muted/50" onClick={() => openEditMaster(m)}>
-                      <TableCell className="font-mono text-muted-foreground">{idx + 1}</TableCell>
-                      <TableCell className="font-medium">{m.accessoryName}</TableCell>
-                      <TableCell>{m.group.groupName}</TableCell>
-                      <TableCell className="hidden md:table-cell">{m.purchaseUom || "-"}</TableCell>
-                      <TableCell className="hidden md:table-cell">{m.stockUom || "-"}</TableCell>
-                      <TableCell className="hidden md:table-cell">{m.minimumStock}</TableCell>
+                      <TableCell className="text-[13px] font-mono text-muted-foreground">{idx + 1}</TableCell>
+                      <TableCell className="text-[13px] font-medium">{m.accessoryName}</TableCell>
+                      <TableCell className="text-[13px]">{m.group.groupName}</TableCell>
+                      <TableCell className="hidden md:table-cell text-[13px]">{m.purchaseUom || "-"}</TableCell>
+                      <TableCell className="hidden md:table-cell text-[13px]">{m.stockUom || "-"}</TableCell>
+                      <TableCell className="hidden md:table-cell text-[13px]">{m.minimumStock}</TableCell>
                       <TableCell><Badge variant={m.isActive ? "default" : "secondary"}>{m.isActive ? "Active" : "Inactive"}</Badge></TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">

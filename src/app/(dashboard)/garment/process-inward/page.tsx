@@ -324,17 +324,17 @@ export default function GarmentProcessInwardPage() {
             <ChevronLeft className="size-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight">
               New Garment Process Inward
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[13px] text-muted-foreground">
               DC No: {form.dcNo}
             </p>
           </div>
         </div>
 
         {/* Form fields */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
@@ -416,7 +416,7 @@ export default function GarmentProcessInwardPage() {
 
         {/* Select Outward DCs */}
         {form.partyId && partyOutwards.length > 0 && (
-          <Card>
+          <Card className="border-0 shadow-sm bg-white">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
                 Select Outward DCs to receive against
@@ -455,7 +455,7 @@ export default function GarmentProcessInwardPage() {
         )}
 
         {form.partyId && partyOutwards.length === 0 && (
-          <Card>
+          <Card className="border-0 shadow-sm bg-white">
             <CardContent className="py-8 text-center text-muted-foreground">
               No open outward DCs found for this party
             </CardContent>
@@ -464,7 +464,7 @@ export default function GarmentProcessInwardPage() {
 
         {/* Items Table */}
         {items.length > 0 && (
-          <Card>
+          <Card className="border-0 shadow-sm bg-white">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Inward Items</CardTitle>
             </CardHeader>
@@ -546,7 +546,7 @@ export default function GarmentProcessInwardPage() {
         )}
 
         {/* Footer */}
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="space-y-2">
@@ -616,10 +616,10 @@ export default function GarmentProcessInwardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight">
             Garment Process Inward
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Receive goods back from garment process contractors
           </p>
         </div>
@@ -641,7 +641,7 @@ export default function GarmentProcessInwardPage() {
       </div>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-20 text-muted-foreground">
@@ -665,33 +665,33 @@ export default function GarmentProcessInwardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>DC No</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Process</TableHead>
-                  <TableHead>Party</TableHead>
-                  <TableHead>PDC No</TableHead>
-                  <TableHead className="text-right">Total Qty</TableHead>
+                  <TableHead className="text-[11px]">DC No</TableHead>
+                  <TableHead className="text-[11px]">Date</TableHead>
+                  <TableHead className="text-[11px]">Process</TableHead>
+                  <TableHead className="text-[11px]">Party</TableHead>
+                  <TableHead className="text-[11px]">PDC No</TableHead>
+                  <TableHead className="text-[11px] text-right">Total Qty</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredInwards.map((inward) => (
                   <TableRow key={inward.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {inward.dcNo}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-[13px]">
                       {format(new Date(inward.dcDate), "dd MMM yyyy")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-[13px]">
                       <Badge variant="secondary" className="text-xs">
                         {inward.processType}
                       </Badge>
                     </TableCell>
-                    <TableCell>{inward.party.partyName}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-[13px]">{inward.party.partyName}</TableCell>
+                    <TableCell className="text-[13px] text-muted-foreground">
                       {inward.pdcNo || "-"}
                     </TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-[13px] text-right font-medium">
                       {inward.totalQty}
                     </TableCell>
                   </TableRow>

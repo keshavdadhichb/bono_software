@@ -82,10 +82,10 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <BarChart3 className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-bold">Reports</h1>
+        <BarChart3 className="size-5 text-primary" />
+        <h1 className="text-xl font-semibold tracking-tight">Reports</h1>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -93,14 +93,14 @@ export default function ReportsPage() {
           const Icon = r.icon;
           return (
             <Link key={r.title} href={r.href}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <Card className="border-0 shadow-sm bg-white hover:shadow-md transition-shadow cursor-pointer h-full">
                 <CardHeader className="flex flex-row items-center gap-4 pb-2">
                   <div className={`rounded-lg p-2.5 ${r.bg}`}>
                     <Icon className={`h-5 w-5 ${r.color}`} />
                   </div>
                   <div>
                     <CardTitle className="text-base">{r.title}</CardTitle>
-                    <CardDescription className="text-sm">{r.description}</CardDescription>
+                    <CardDescription className="text-[13px]">{r.description}</CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">

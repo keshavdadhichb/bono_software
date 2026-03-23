@@ -147,30 +147,30 @@ export default function StoresPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <StoreIcon className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Stores</h1>
+          <StoreIcon className="size-5 text-primary" />
+          <h1 className="text-xl font-semibold tracking-tight">Stores</h1>
         </div>
-        <Button size="sm" onClick={openAddDialog}>
+        <Button size="sm" className="h-8 text-[13px]" onClick={openAddDialog}>
           <Plus className="h-4 w-4 mr-1" />
           Add Store
         </Button>
       </div>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-14">S.No</TableHead>
-                <TableHead>Store Name</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead className="w-20">Status</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-14 text-[11px] uppercase tracking-wide">S.No</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Store Name</TableHead>
+                <TableHead className="text-[11px] uppercase tracking-wide">Location</TableHead>
+                <TableHead className="w-20 text-[11px] uppercase tracking-wide">Status</TableHead>
+                <TableHead className="w-20 text-right text-[11px] uppercase tracking-wide">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -199,16 +199,17 @@ export default function StoresPage() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => openEditDialog(store)}
                   >
-                    <TableCell className="font-mono text-muted-foreground">
+                    <TableCell className="text-[13px] font-mono text-muted-foreground">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {store.storeName}
                     </TableCell>
-                    <TableCell>{store.storeLocation || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{store.storeLocation || "-"}</TableCell>
                     <TableCell>
                       <Badge
                         variant={store.isActive ? "default" : "secondary"}
+                        className="border"
                       >
                         {store.isActive ? "Active" : "Inactive"}
                       </Badge>
@@ -259,7 +260,7 @@ export default function StoresPage() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <Label htmlFor="storeName">
+              <Label htmlFor="storeName" className="text-[13px]">
                 Store Name <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -270,7 +271,7 @@ export default function StoresPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="storeLocation">Location</Label>
+              <Label htmlFor="storeLocation" className="text-[13px]">Location</Label>
               <Input
                 id="storeLocation"
                 value={form.storeLocation}
@@ -286,7 +287,7 @@ export default function StoresPage() {
                 onChange={(e) => updateForm("isActive", e.target.checked)}
                 className="h-4 w-4 rounded border-gray-300"
               />
-              <Label htmlFor="isActive">Active</Label>
+              <Label htmlFor="isActive" className="text-[13px]">Active</Label>
             </div>
           </div>
 

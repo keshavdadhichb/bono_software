@@ -457,11 +457,11 @@ export default function YarnProcessInwardPage() {
 
   if (view === "list") {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold">Yarn Process Inward</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-xl font-semibold tracking-tight">Yarn Process Inward</h1>
+            <p className="text-[13px] text-muted-foreground">
               Receive yarn back from processing
             </p>
           </div>
@@ -495,20 +495,20 @@ export default function YarnProcessInwardPage() {
           ))}
         </Tabs>
 
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>DC No</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Process</TableHead>
-                  <TableHead>Party</TableHead>
-                  <TableHead>Outward DC</TableHead>
-                  <TableHead>Part Receipt</TableHead>
-                  <TableHead className="text-right">Total Qty</TableHead>
-                  <TableHead className="text-right">Net Amount</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-[11px]">DC No</TableHead>
+                  <TableHead className="text-[11px]">Date</TableHead>
+                  <TableHead className="text-[11px]">Process</TableHead>
+                  <TableHead className="text-[11px]">Party</TableHead>
+                  <TableHead className="text-[11px]">Outward DC</TableHead>
+                  <TableHead className="text-[11px]">Part Receipt</TableHead>
+                  <TableHead className="text-[11px] text-right">Total Qty</TableHead>
+                  <TableHead className="text-[11px] text-right">Net Amount</TableHead>
+                  <TableHead className="text-[11px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -532,13 +532,13 @@ export default function YarnProcessInwardPage() {
                       className="cursor-pointer"
                       onClick={() => openEditForm(rec)}
                     >
-                      <TableCell className="font-medium">{rec.dcNo}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px] font-medium">{rec.dcNo}</TableCell>
+                      <TableCell className="text-[13px]">
                         {format(new Date(rec.dcDate), "dd/MM/yyyy")}
                       </TableCell>
-                      <TableCell>{rec.processType}</TableCell>
-                      <TableCell>{rec.party?.partyName}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-[13px]">{rec.processType}</TableCell>
+                      <TableCell className="text-[13px]">{rec.party?.partyName}</TableCell>
+                      <TableCell className="text-[13px]">
                         {rec.outward?.dcNo || "-"}
                       </TableCell>
                       <TableCell>
@@ -548,10 +548,10 @@ export default function YarnProcessInwardPage() {
                           "Full"
                         )}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-[13px] text-right">
                         {rec.totalQty.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-[13px] text-right">
                         {rec.netAmount.toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
@@ -582,7 +582,7 @@ export default function YarnProcessInwardPage() {
   // =========================================================================
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button
@@ -596,10 +596,10 @@ export default function YarnProcessInwardPage() {
           <ArrowLeft className="size-4" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-xl font-semibold tracking-tight">
             {editingId ? `Edit Inward - ${dcNo}` : "New Inward DC"}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Yarn process inward receipt
           </p>
         </div>
@@ -621,22 +621,22 @@ export default function YarnProcessInwardPage() {
       </div>
 
       {/* Header fields */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardHeader>
           <CardTitle>Inward Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4">
             <div className="space-y-1">
-              <Label>DC No</Label>
+              <Label className="text-[13px]">DC No</Label>
               <Input value={dcNo} disabled className="bg-muted/50" />
             </div>
             <div className="space-y-1">
-              <Label>Date</Label>
+              <Label className="text-[13px]">Date</Label>
               <DatePicker value={dcDate} onChange={setDcDate} />
             </div>
             <div className="space-y-1">
-              <Label>Process Type</Label>
+              <Label className="text-[13px]">Process Type</Label>
               <Select value={processType} onValueChange={(v) => setProcessType(v ?? "")}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -651,7 +651,7 @@ export default function YarnProcessInwardPage() {
               </Select>
             </div>
             <div className="space-y-1">
-              <Label>Store</Label>
+              <Label className="text-[13px]">Store</Label>
               <Select value={storeId} onValueChange={(v) => setStoreId(v ?? "")}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select store" />
@@ -668,7 +668,7 @@ export default function YarnProcessInwardPage() {
 
             {/* Party + Select DC's */}
             <div className="space-y-1">
-              <Label>Party (Job Worker)</Label>
+              <Label className="text-[13px]">Party (Job Worker)</Label>
               <Select value={partyId} onValueChange={(v) => setPartyId(v ?? "")}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select party" />
@@ -683,7 +683,7 @@ export default function YarnProcessInwardPage() {
               </Select>
             </div>
             <div className="space-y-1">
-              <Label>&nbsp;</Label>
+              <Label className="text-[13px]">&nbsp;</Label>
               <Button
                 variant="outline"
                 className="w-full"
@@ -696,7 +696,7 @@ export default function YarnProcessInwardPage() {
             </div>
 
             <div className="space-y-1">
-              <Label>PDC No</Label>
+              <Label className="text-[13px]">PDC No</Label>
               <Input
                 value={pdcNo}
                 onChange={(e) => setPdcNo(e.target.value)}
@@ -704,7 +704,7 @@ export default function YarnProcessInwardPage() {
               />
             </div>
             <div className="space-y-1">
-              <Label>PDC Date</Label>
+              <Label className="text-[13px]">PDC Date</Label>
               <DatePicker value={pdcDate} onChange={setPdcDate} />
             </div>
           </div>
@@ -783,7 +783,7 @@ export default function YarnProcessInwardPage() {
       </Dialog>
 
       {/* Items grid */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Items</CardTitle>
@@ -937,11 +937,11 @@ export default function YarnProcessInwardPage() {
 
       {/* Footer */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 border-0 shadow-sm bg-white">
           <CardContent className="pt-4">
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label>Narration</Label>
+                <Label className="text-[13px]">Narration</Label>
                 <Textarea
                   placeholder="Enter remarks..."
                   value={narration}
@@ -951,14 +951,14 @@ export default function YarnProcessInwardPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label>Vehicle No</Label>
+                  <Label className="text-[13px]">Vehicle No</Label>
                   <Input
                     value={vehicleNo}
                     onChange={(e) => setVehicleNo(e.target.value)}
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Transport</Label>
+                  <Label className="text-[13px]">Transport</Label>
                   <Input
                     value={transport}
                     onChange={(e) => setTransport(e.target.value)}
@@ -969,7 +969,7 @@ export default function YarnProcessInwardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-sm bg-white">
           <CardHeader>
             <CardTitle>Summary</CardTitle>
           </CardHeader>

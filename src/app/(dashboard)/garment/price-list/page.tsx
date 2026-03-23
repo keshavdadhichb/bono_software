@@ -154,10 +154,10 @@ export default function GarmentPriceListPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight">
             Garment Price List
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Set and manage prices for garment styles
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function GarmentPriceListPage() {
       </div>
 
       {/* Table */}
-      <Card>
+      <Card className="border-0 shadow-sm bg-white">
         <CardContent className="p-0">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -213,11 +213,11 @@ export default function GarmentPriceListPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">#</TableHead>
-                  <TableHead>Style No</TableHead>
-                  <TableHead>Style Ref</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead className="w-40 text-right">
+                  <TableHead className="w-12 text-[11px]">#</TableHead>
+                  <TableHead className="text-[11px]">Style No</TableHead>
+                  <TableHead className="text-[11px]">Style Ref</TableHead>
+                  <TableHead className="text-[11px]">Size</TableHead>
+                  <TableHead className="w-40 text-[11px] text-right">
                     Rate (per piece)
                   </TableHead>
                   <TableHead className="w-16" />
@@ -229,14 +229,14 @@ export default function GarmentPriceListPage() {
                     key={`${item.styleNo}-${item.size}-${idx}`}
                     className={item.isDirty ? "bg-amber-50" : ""}
                   >
-                    <TableCell className="text-muted-foreground text-center">
+                    <TableCell className="text-[13px] text-muted-foreground text-center">
                       {idx + 1}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-[13px] font-medium">
                       {item.styleNo}
                     </TableCell>
-                    <TableCell>{item.styleRef || "-"}</TableCell>
-                    <TableCell>{item.size || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.styleRef || "-"}</TableCell>
+                    <TableCell className="text-[13px]">{item.size || "-"}</TableCell>
                     <TableCell className="text-right">
                       <Input
                         type="number"
