@@ -36,7 +36,7 @@ export async function GET() {
     const notifications = [
       ...overdueYarnDCs.map((dc: any) => ({ type: "overdue" as const, message: `Yarn DC ${dc.dcNo} to ${dc.party.partyName} is overdue`, time: dc.dcDate.toISOString() })),
       ...overdueFabricDCs.map((dc: any) => ({ type: "overdue" as const, message: `Fabric DC ${dc.dcNo} to ${dc.party.partyName} is overdue`, time: dc.dcDate.toISOString() })),
-      ...lowStockYarn.map(s => ({ type: "stock" as const, message: `${s.counts} ${s.yarnType} yarn stock low (${s.stockKgs} Kgs)`, time: s.updatedAt.toISOString() })),
+      ...lowStockYarn.map((s: any) => ({ type: "stock" as const, message: `${s.counts} ${s.yarnType} yarn stock low (${s.stockKgs} Kgs)`, time: s.updatedAt.toISOString() })),
     ]
 
     return Response.json({
