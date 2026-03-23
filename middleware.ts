@@ -1,31 +1,27 @@
-import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt"
 
-const publicPaths = [
-  "/login",
-  "/api/auth",
-  "/api/users/seed",
-  "/_next",
-  "/favicon.ico",
-]
-
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Allow public paths
+  const publicPaths = ["/login", "/api/auth", "/api/users/seed", "/_next", "/favicon.ico"]
   if (publicPaths.some((p) => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
-  // Check authentication for protected routes
-  if (!req.auth) {
+  // Check JWT token
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+
+  if (!token) {
     const loginUrl = new URL("/login", req.nextUrl.origin)
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: [
@@ -42,7 +38,7 @@ export const config = {
     "/api/fabric/:path*",
     "/api/garment/:path*",
     "/api/accessory/:path*",
-    "/api/master/:path*",
     "/api/reports/:path*",
+    "/api/ai/:path*",
   ],
 }
