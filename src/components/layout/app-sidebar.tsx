@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Separator } from "@/components/ui/separator"
 import {
   LayoutDashboard,
   Database,
@@ -27,6 +28,8 @@ import {
   LogOut,
   Scissors,
   Shield,
+  Star,
+  Clock,
 } from "lucide-react"
 import { usePermissions } from "@/lib/use-permissions"
 
@@ -42,6 +45,11 @@ interface NavGroup {
   icon: React.ElementType
   href?: string
   children?: NavLink[]
+}
+
+interface PinnedItem {
+  label: string
+  href: string
 }
 
 // ---------- Navigation data ----------
@@ -125,6 +133,207 @@ function getInitials(name?: string | null): string {
     .slice(0, 2)
 }
 
+function buildLabelMap(navGroups: NavGroup[]): Record<string, string> {
+  const map: Record<string, string> = {}
+  for (const group of navGroups) {
+    if (group.href) {
+      map[group.href] = group.label
+    }
+    if (group.children) {
+      for (const child of group.children) {
+        map[child.href] = child.label
+      }
+    }
+  }
+  return map
+}
+
+function readLocalStorage<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return fallback
+    return JSON.parse(raw) as T
+  } catch {
+    return fallback
+  }
+}
+
+function writeLocalStorage(key: string, value: unknown): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // ignore
+  }
+}
+
+// ---------- Custom hooks ----------
+
+function useRecents(pathname: string, labelMap: Record<string, string>) {
+  const [recents, setRecents] = React.useState<PinnedItem[]>(() =>
+    readLocalStorage<PinnedItem[]>("erp-recents", [])
+  )
+
+  React.useEffect(() => {
+    const label = labelMap[pathname]
+    if (!label) return
+
+    setRecents((prev) => {
+      const filtered = prev.filter((r) => r.href !== pathname)
+      const next: PinnedItem[] = [{ label, href: pathname }, ...filtered].slice(0, 5)
+      writeLocalStorage("erp-recents", next)
+      return next
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
+
+  return recents
+}
+
+function useFavorites() {
+  const [favorites, setFavorites] = React.useState<PinnedItem[]>(() =>
+    readLocalStorage<PinnedItem[]>("erp-favorites", [])
+  )
+
+  const toggleFavorite = React.useCallback((item: PinnedItem) => {
+    setFavorites((prev) => {
+      const exists = prev.some((f) => f.href === item.href)
+      const next = exists
+        ? prev.filter((f) => f.href !== item.href)
+        : [...prev, item]
+      writeLocalStorage("erp-favorites", next)
+      return next
+    })
+  }, [])
+
+  const isFavorite = React.useCallback(
+    (href: string) => favorites.some((f) => f.href === href),
+    [favorites]
+  )
+
+  return { favorites, toggleFavorite, isFavorite }
+}
+
+// ---------- Recents & Favorites sections (shared) ----------
+
+interface PinnedSectionsProps {
+  recents: PinnedItem[]
+  favorites: PinnedItem[]
+  isFavorite: (href: string) => boolean
+  toggleFavorite: (item: PinnedItem) => void
+  onNavigate?: () => void
+}
+
+function PinnedSections({
+  recents,
+  favorites,
+  isFavorite,
+  toggleFavorite,
+  onNavigate,
+}: PinnedSectionsProps) {
+  const hasRecents = recents.length > 0
+  const hasFavorites = favorites.length > 0
+
+  if (!hasRecents && !hasFavorites) return null
+
+  return (
+    <>
+      {hasRecents && (
+        <div className="flex flex-col gap-0.5">
+          <p className="px-3 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+            Recents
+          </p>
+          {recents.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className="group flex items-center gap-2 rounded-md px-3 py-[5px] text-[12px] text-muted-foreground transition-all duration-150 hover:bg-accent hover:text-foreground"
+            >
+              <Clock className="size-3 shrink-0 text-muted-foreground/50" />
+              <span className="truncate flex-1">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {hasFavorites && (
+        <div className="flex flex-col gap-0.5">
+          <p className="px-3 pt-1 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+            Favorites
+          </p>
+          {favorites.map((item) => (
+            <div key={item.href} className="group flex items-center gap-2 rounded-md px-3 py-[5px] text-[12px] text-muted-foreground transition-all duration-150 hover:bg-accent hover:text-foreground">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  toggleFavorite(item)
+                }}
+                className="shrink-0 focus:outline-none"
+                aria-label={isFavorite(item.href) ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Star
+                  className={cn(
+                    "size-3 transition-colors",
+                    isFavorite(item.href)
+                      ? "fill-amber-400 text-amber-400"
+                      : "fill-none text-muted-foreground/40"
+                  )}
+                />
+              </button>
+              <Link
+                href={item.href}
+                onClick={onNavigate}
+                className="truncate flex-1"
+              >
+                {item.label}
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Separator className="my-1" />
+    </>
+  )
+}
+
+// ---------- Star button for nav child links ----------
+
+interface StarButtonProps {
+  item: PinnedItem
+  isFavorite: boolean
+  onToggle: (item: PinnedItem) => void
+}
+
+function StarButton({ item, isFavorite: starred, onToggle }: StarButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        onToggle(item)
+      }}
+      className={cn(
+        "ml-auto shrink-0 rounded p-0.5 opacity-0 transition-all duration-150 focus:opacity-100 focus:outline-none group-hover:opacity-100",
+        starred ? "opacity-100" : ""
+      )}
+      aria-label={starred ? "Remove from favorites" : "Add to favorites"}
+    >
+      <Star
+        className={cn(
+          "size-3 transition-colors",
+          starred
+            ? "fill-amber-400 text-amber-400"
+            : "fill-none text-muted-foreground/40 hover:text-amber-400"
+        )}
+      />
+    </button>
+  )
+}
+
 // ---------- Sidebar component ----------
 
 interface AppSidebarProps {
@@ -148,6 +357,11 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
     }
     return nav
   }, [permissions.canManageUsers])
+
+  const labelMap = React.useMemo(() => buildLabelMap(fullNavigation), [fullNavigation])
+
+  const recents = useRecents(pathname, labelMap)
+  const { favorites, toggleFavorite, isFavorite } = useFavorites()
 
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
@@ -201,6 +415,16 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       {/* Navigation */}
       <ScrollArea className="flex-1 overflow-y-auto">
         <nav className="flex flex-col gap-0.5 px-2 py-3">
+          {/* Recents & Favorites (only when expanded) */}
+          {!collapsed && (
+            <PinnedSections
+              recents={recents}
+              favorites={favorites}
+              isFavorite={isFavorite}
+              toggleFavorite={toggleFavorite}
+            />
+          )}
+
           <TooltipProvider>
             {fullNavigation.map((group) => {
               const Icon = group.icon
@@ -225,7 +449,14 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                       }
                     >
                       <Icon className={cn("size-4 shrink-0", linkActive && "text-primary")} />
-                      {!collapsed && <span>{group.label}</span>}
+                      {!collapsed && <span className="flex-1">{group.label}</span>}
+                      {!collapsed && (
+                        <StarButton
+                          item={{ label: group.label, href: group.href }}
+                          isFavorite={isFavorite(group.href)}
+                          onToggle={toggleFavorite}
+                        />
+                      )}
                     </TooltipTrigger>
                     {collapsed && (
                       <TooltipContent side="right" sideOffset={8}>
@@ -292,13 +523,18 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                                 key={child.href}
                                 href={child.href}
                                 className={cn(
-                                  "rounded-md px-2.5 py-[6px] text-[13px] transition-all duration-150",
+                                  "group flex items-center rounded-md px-2.5 py-[6px] text-[13px] transition-all duration-150",
                                   childActive
                                     ? "bg-primary/10 font-medium text-primary"
                                     : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                 )}
                               >
-                                {child.label}
+                                <span className="flex-1">{child.label}</span>
+                                <StarButton
+                                  item={child}
+                                  isFavorite={isFavorite(child.href)}
+                                  onToggle={toggleFavorite}
+                                />
                               </Link>
                             )
                           })}
@@ -349,20 +585,22 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                   {session?.user?.email ?? ""}
                 </p>
               </div>
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <button
-                      type="button"
-                      onClick={() => signOut({ callbackUrl: "/login" })}
-                      className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                    />
-                  }
-                >
-                  <LogOut className="size-3.5" />
-                </TooltipTrigger>
-                <TooltipContent side="top">Sign out</TooltipContent>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: "/login" })}
+                        className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      />
+                    }
+                  >
+                    <LogOut className="size-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Sign out</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           )}
         </div>
@@ -393,6 +631,11 @@ export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
     }
     return nav
   }, [permissions.canManageUsers])
+
+  const labelMap = React.useMemo(() => buildLabelMap(fullNavigation), [fullNavigation])
+
+  const recents = useRecents(pathname, labelMap)
+  const { favorites, toggleFavorite, isFavorite } = useFavorites()
 
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
@@ -439,6 +682,15 @@ export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
       {/* Navigation */}
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-0.5 px-2 py-3">
+          {/* Recents & Favorites */}
+          <PinnedSections
+            recents={recents}
+            favorites={favorites}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+            onNavigate={onNavigate}
+          />
+
           {fullNavigation.map((group) => {
             const Icon = group.icon
             const active = isSectionActive(group)
@@ -452,14 +704,19 @@ export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
                   href={group.href}
                   onClick={onNavigate}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
+                    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
                     linkActive
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   )}
                 >
                   <Icon className={cn("size-4 shrink-0", linkActive && "text-primary")} />
-                  <span>{group.label}</span>
+                  <span className="flex-1">{group.label}</span>
+                  <StarButton
+                    item={{ label: group.label, href: group.href }}
+                    isFavorite={isFavorite(group.href)}
+                    onToggle={toggleFavorite}
+                  />
                 </Link>
               )
             }
@@ -502,13 +759,18 @@ export function MobileSidebar({ onNavigate }: MobileSidebarProps) {
                             href={child.href}
                             onClick={onNavigate}
                             className={cn(
-                              "rounded-md px-2.5 py-[7px] text-[13px] transition-all duration-150",
+                              "group flex items-center rounded-md px-2.5 py-[7px] text-[13px] transition-all duration-150",
                               childActive
                                 ? "bg-primary/10 font-medium text-primary"
                                 : "text-muted-foreground hover:bg-accent hover:text-foreground"
                             )}
                           >
-                            {child.label}
+                            <span className="flex-1">{child.label}</span>
+                            <StarButton
+                              item={child}
+                              isFavorite={isFavorite(child.href)}
+                              onToggle={toggleFavorite}
+                            />
                           </Link>
                         )
                       })}

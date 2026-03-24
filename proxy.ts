@@ -40,5 +40,6 @@ export const config = {
     "/api/accessory/:path*",
     "/api/reports/:path*",
     "/api/ai/:path*",
+    "/api/search",
   ],
 }

@@ -9,6 +9,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { AiProvider } from "@/components/ai/ai-provider"
+import {
+  SpotlightProvider,
+  SpotlightSearch,
+} from "@/components/search/spotlight"
+import { KeyboardShortcutsDialog } from "@/components/shortcuts/keyboard-shortcuts"
 
 export default function DashboardLayout({
   children,
@@ -19,36 +24,44 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-muted/30">
-      {/* Desktop sidebar */}
-      <aside className="hidden shrink-0 md:block">
-        <AppSidebar
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed((prev) => !prev)}
-        />
-      </aside>
+    <SpotlightProvider>
+      <div className="flex h-screen overflow-hidden bg-muted/30">
+        {/* Desktop sidebar */}
+        <aside className="hidden shrink-0 md:block">
+          <AppSidebar
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed((prev) => !prev)}
+          />
+        </aside>
 
-      {/* Mobile sidebar (Sheet) */}
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" showCloseButton={false} className="w-[280px] p-0">
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <MobileSidebar onNavigate={() => setMobileOpen(false)} />
-        </SheetContent>
-      </Sheet>
+        {/* Mobile sidebar (Sheet) */}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetContent side="left" showCloseButton={false} className="w-[280px] p-0">
+            <SheetTitle className="sr-only">Navigation</SheetTitle>
+            <MobileSidebar onNavigate={() => setMobileOpen(false)} />
+          </SheetContent>
+        </Sheet>
 
-      {/* Main content area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <TopBar onMobileMenuToggle={() => setMobileOpen((prev) => !prev)} />
+        {/* Main content area */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <TopBar onMobileMenuToggle={() => setMobileOpen((prev) => !prev)} />
 
-        <main className="flex-1 overflow-y-auto scroll-smooth">
-          <div className="mx-auto w-full max-w-[1400px] px-4 py-5 md:px-8 md:py-6">
-            {children}
-          </div>
-        </main>
+          <main className="flex-1 overflow-y-auto scroll-smooth">
+            <div className="mx-auto w-full max-w-[1400px] px-4 py-5 md:px-8 md:py-6">
+              {children}
+            </div>
+          </main>
+        </div>
+
+        {/* AI Command Bar — floating button + chat panel */}
+        <AiProvider />
+
+        {/* Global spotlight search modal */}
+        <SpotlightSearch />
+
+        {/* Keyboard shortcuts reference dialog */}
+        <KeyboardShortcutsDialog />
       </div>
-
-      {/* AI Command Bar — floating button + chat panel */}
-      <AiProvider />
-    </div>
+    </SpotlightProvider>
   )
 }

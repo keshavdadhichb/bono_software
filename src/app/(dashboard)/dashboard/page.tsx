@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import {
   Users, ArrowUpRight, Package, Loader2, Clock, AlertCircle,
   ChevronRight, CircleDot, Layers, Shirt, BarChart3,
@@ -43,6 +44,18 @@ function formatCurrentDate(): string {
   })
 }
 
+function getGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 12) return "Good morning"
+  if (hour < 17) return "Good afternoon"
+  return "Good evening"
+}
+
+function getFirstName(name?: string | null): string {
+  if (!name) return "there"
+  return name.split(" ")[0]
+}
+
 function getFinancialYear(): string {
   const now = new Date()
   const month = now.getMonth()
@@ -75,6 +88,7 @@ const quickActions = [
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const { data: session } = useSession()
 
   useEffect(() => {
     fetch("/api/dashboard")
@@ -103,8 +117,57 @@ export default function DashboardPage() {
     { title: "Yarn Stock", value: `${stats.yarnStockKgs.toFixed(0)} Kgs`, icon: CircleDot, color: "text-indigo-600", bg: "bg-indigo-50", ring: "ring-indigo-100" },
   ]
 
+  const overdueCount = notifications.filter((n) => n.type === "overdue").length
+  const greeting = getGreeting()
+  const firstName = getFirstName(session?.user?.name)
+
   return (
     <div className="flex flex-col gap-6">
+      {/* Morning Digest */}
+      <div className="rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-blue-50 dark:border-indigo-900/40 dark:from-indigo-950/40 dark:to-blue-950/40 px-5 py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-0.5">
+              <h2 className="text-base font-semibold tracking-tight text-foreground">
+                {greeting}, {firstName}!
+              </h2>
+              <p className="text-[12px] text-muted-foreground">{formatCurrentDate()}</p>
+            </div>
+            <p className="text-[12px] text-indigo-700 dark:text-indigo-300 font-medium">
+              Here&apos;s your overview for today
+            </p>
+            {overdueCount > 0 && (
+              <p className="text-[12px] text-amber-700 dark:text-amber-400 font-medium">
+                ⚠️ {overdueCount} delivery {overdueCount === 1 ? "challan is" : "challans are"} overdue
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span
+              className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
+                stats.pendingOutward > 0
+                  ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+                  : "border-green-200 bg-green-50 text-green-700 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-400"
+              }`}
+            >
+              {stats.pendingOutward} pending DCs
+            </span>
+            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-400">
+              {stats.yarnStockKgs.toFixed(0)} Kgs yarn
+            </span>
+            <span
+              className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
+                notifications.length > 0
+                  ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/40 dark:bg-orange-950/30 dark:text-orange-400"
+                  : "border-green-200 bg-green-50 text-green-700 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-400"
+              }`}
+            >
+              {notifications.length} {notifications.length === 1 ? "alert" : "alerts"}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>

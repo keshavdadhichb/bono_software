@@ -20,7 +20,12 @@ import {
   User,
   Settings,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react"
+import { NotificationBell } from "@/components/notifications/notification-bell"
+import { useTheme } from "@/lib/theme-provider"
+import { SpotlightTrigger } from "@/components/search/spotlight"
 
 // ---------- Breadcrumb helpers ----------
 
@@ -79,6 +84,7 @@ interface TopBarProps {
 export function TopBar({ onMobileMenuToggle }: TopBarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const { theme, toggleTheme } = useTheme()
   const breadcrumbs = getBreadcrumbs(pathname)
 
   return (
@@ -124,6 +130,26 @@ export function TopBar({ onMobileMenuToggle }: TopBarProps) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Spotlight search trigger */}
+      <SpotlightTrigger />
+
+      {/* Notification Bell */}
+      <NotificationBell />
+
+      {/* Dark mode toggle */}
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none"
+        aria-label="Toggle theme"
+      >
+        {theme === "dark" ? (
+          <Sun className="size-[18px]" />
+        ) : (
+          <Moon className="size-[18px]" />
+        )}
+      </button>
 
       {/* User dropdown */}
       <DropdownMenu>
