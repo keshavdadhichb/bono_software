@@ -22,6 +22,8 @@ interface DashboardData {
     totalStores: number
     pendingOutward: number
     yarnStockKgs: number
+    fabricStockKgs: number
+    garmentStockPcs: number
   }
   recentTransactions: {
     type: string
@@ -69,6 +71,8 @@ const typeBadgeColors: Record<string, string> = {
   "Fabric Outward": "bg-emerald-50 text-emerald-700 border-emerald-200",
   "Garment Outward": "bg-violet-50 text-violet-700 border-violet-200",
   "Yarn Inward": "bg-green-50 text-green-700 border-green-200",
+  "Fabric Inward": "bg-teal-50 text-teal-700 border-teal-200",
+  "Garment Inward": "bg-pink-50 text-pink-700 border-pink-200",
 }
 
 const statusBadgeColors: Record<string, string> = {
@@ -106,7 +110,7 @@ export default function DashboardPage() {
     )
   }
 
-  const stats = data?.stats ?? { totalParties: 0, totalStores: 0, pendingOutward: 0, yarnStockKgs: 0 }
+  const stats = data?.stats ?? { totalParties: 0, totalStores: 0, pendingOutward: 0, yarnStockKgs: 0, fabricStockKgs: 0, garmentStockPcs: 0 }
   const transactions = data?.recentTransactions ?? []
   const notifications = data?.notifications ?? []
 
@@ -115,6 +119,8 @@ export default function DashboardPage() {
     { title: "Pending Outward DCs", value: stats.pendingOutward, icon: ArrowUpRight, color: "text-amber-600", bg: "bg-amber-50", ring: "ring-amber-100" },
     { title: "Stores", value: stats.totalStores, icon: Package, color: "text-green-600", bg: "bg-green-50", ring: "ring-green-100" },
     { title: "Yarn Stock", value: `${stats.yarnStockKgs.toFixed(0)} Kgs`, icon: CircleDot, color: "text-indigo-600", bg: "bg-indigo-50", ring: "ring-indigo-100" },
+    { title: "Fabric Stock", value: `${stats.fabricStockKgs.toFixed(0)} Kgs`, icon: Layers, color: "text-emerald-600", bg: "bg-emerald-50", ring: "ring-emerald-100" },
+    { title: "Garment Stock", value: `${stats.garmentStockPcs} Pcs`, icon: Shirt, color: "text-violet-600", bg: "bg-violet-50", ring: "ring-violet-100" },
   ]
 
   const overdueCount = notifications.filter((n) => n.type === "overdue").length
@@ -180,7 +186,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {statCards.map((s) => {
           const Icon = s.icon
           return (
