@@ -92,6 +92,7 @@ function FloatingParticles() {
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
 
   const {
     register,
@@ -99,8 +100,13 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormValues>();
 
-  // Check URL for error from NextAuth redirect
+  // Fetch CSRF token on mount + check URL for error
   useEffect(() => {
+    fetch("/api/auth/csrf")
+      .then((r) => r.json())
+      .then((d) => setCsrfToken(d.csrfToken))
+      .catch(() => {});
+
     const params = new URLSearchParams(window.location.search);
     if (params.get("error")) {
       setLoginError("Invalid username or password");
@@ -111,39 +117,28 @@ export default function LoginPage() {
     setIsLoading(true);
     setLoginError("");
 
-    try {
-      // Step 1: Get CSRF token
-      const csrfRes = await fetch("/api/auth/csrf");
-      const { csrfToken } = await csrfRes.json();
+    // Submit as a real HTML form — the browser handles cookies & redirect
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/api/auth/callback/credentials";
 
-      // Step 2: POST credentials directly
-      const res = await fetch("/api/auth/callback/credentials", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          csrfToken,
-          username: data.username,
-          password: data.password,
-          json: "true",
-        }),
-        redirect: "follow",
-      });
+    const fields = {
+      csrfToken,
+      username: data.username,
+      password: data.password,
+      callbackUrl: "/dashboard",
+    };
 
-      // Step 3: Check if session was created
-      const sessionRes = await fetch("/api/auth/session");
-      const session = await sessionRes.json();
-
-      if (session?.user) {
-        toast.success("Signed in successfully");
-        window.location.href = "/dashboard";
-      } else {
-        setLoginError("Invalid username or password");
-        setIsLoading(false);
-      }
-    } catch {
-      setLoginError("Something went wrong. Please try again.");
-      setIsLoading(false);
+    for (const [key, value] of Object.entries(fields)) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
     }
+
+    document.body.appendChild(form);
+    form.submit();
   };
 
   return (
