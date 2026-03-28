@@ -380,10 +380,13 @@ export async function POST(req: NextRequest) {
     }
 
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
         body: JSON.stringify({
           contents,
           systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
@@ -399,9 +402,10 @@ export async function POST(req: NextRequest) {
     if (!geminiResponse.ok) {
       const errText = await geminiResponse.text()
       console.error("Gemini API error:", errText)
-      return NextResponse.json({
-        message: "I'm having trouble connecting to the AI service right now. Please try again in a moment.",
-      })
+      return NextResponse.json(
+        { message: "I'm having trouble connecting to the AI service right now. Please try again in a moment." },
+        { status: 503 }
+      )
     }
 
     const geminiData = await geminiResponse.json()

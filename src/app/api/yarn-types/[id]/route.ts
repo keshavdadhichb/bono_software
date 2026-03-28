@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
@@ -6,6 +7,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheckPut = await requirePermission("canEditMaster"); if (authCheckPut) return authCheckPut;
     const { id } = await params;
     const body = await request.json();
 
@@ -39,6 +41,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheckDel = await requirePermission("canDeleteMaster"); if (authCheckDel) return authCheckDel;
     const { id } = await params;
     await db.yarnType.delete({ where: { id } });
     return Response.json({ message: "Yarn type deleted successfully" });

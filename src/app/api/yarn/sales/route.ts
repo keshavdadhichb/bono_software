@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewYarn"); if (authCheck) return authCheck;
     const { searchParams } = request.nextUrl;
     const search = searchParams.get("search") || "";
 
@@ -30,6 +32,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditYarn"); if (authCheck) return authCheck;
     const body = await request.json();
 
     if (!body.partyId) {

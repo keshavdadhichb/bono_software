@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewYarn"); if (authCheck) return authCheck;
     const searchParams = request.nextUrl.searchParams;
     const processType = searchParams.get("processType");
     const status = searchParams.get("status");
@@ -38,6 +40,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditYarn"); if (authCheck) return authCheck;
     const body = await request.json();
 
     if (!body.partyId || !body.dcDate || !body.processType) {
@@ -104,51 +107,91 @@ export async function POST(request: NextRequest) {
     const roundOff = parseFloat(String(body.roundOff)) || 0;
     const netAmount = totalAmount + otherCharges + gstAmount + roundOff;
 
-    const inward = await db.yarnProcessInward.create({
-      data: {
-        dcNo,
-        dcDate: new Date(body.dcDate),
-        processType: body.processType,
-        storeId: body.storeId || null,
-        partyId: body.partyId,
-        outwardId: body.outwardId || null,
-        pdcNo: body.pdcNo || null,
-        pdcDate: body.pdcDate ? new Date(body.pdcDate) : null,
-        isPartReceipt: body.isPartReceipt || false,
-        narration: body.narration || null,
-        vehicleNo: body.vehicleNo || null,
-        transport: body.transport || null,
-        totalQty,
-        otherCharges,
-        totalAmount,
-        gstAmount,
-        roundOff,
-        netAmount,
-        items: { create: items },
-      },
-      include: { items: true, party: true, outward: true },
-    });
+    const storeId = body.storeId || "default";
 
-    // Update outward DC status if linked
-    if (body.outwardId) {
-      const outward = await db.yarnProcessOutward.findUnique({
-        where: { id: body.outwardId },
+    const inward = await db.$transaction(async (tx: any) => {
+      const created = await tx.yarnProcessInward.create({
+        data: {
+          dcNo,
+          dcDate: new Date(body.dcDate),
+          processType: body.processType,
+          storeId: body.storeId || null,
+          partyId: body.partyId,
+          outwardId: body.outwardId || null,
+          pdcNo: body.pdcNo || null,
+          pdcDate: body.pdcDate ? new Date(body.pdcDate) : null,
+          isPartReceipt: body.isPartReceipt || false,
+          narration: body.narration || null,
+          vehicleNo: body.vehicleNo || null,
+          transport: body.transport || null,
+          totalQty,
+          otherCharges,
+          totalAmount,
+          gstAmount,
+          roundOff,
+          netAmount,
+          items: { create: items },
+        },
+        include: { items: true, party: true, outward: true },
       });
-      if (outward) {
-        // Check total received against this outward
-        const totalReceived = await db.yarnProcessInward.aggregate({
-          where: { outwardId: body.outwardId },
-          _sum: { totalQty: true },
+
+      // Add received yarn back to stock (processed yarn)
+      for (const item of items) {
+        const existing = await tx.yarnStock.findFirst({
+          where: {
+            storeId,
+            lotNo: item.lotNo || "",
+            counts: item.counts || "",
+            yarnType: item.yarnType || "",
+            color: item.recColor || item.issueColor || null,
+          },
         });
-        const received = totalReceived._sum.totalQty || 0;
-        const newStatus =
-          received >= outward.totalQty ? "Closed" : "Partial";
-        await db.yarnProcessOutward.update({
-          where: { id: body.outwardId },
-          data: { status: newStatus },
-        });
+        if (existing) {
+          await tx.yarnStock.update({
+            where: { id: existing.id },
+            data: {
+              stockKgs: { increment: item.recQty },
+              process: body.processType,
+            },
+          });
+        } else {
+          await tx.yarnStock.create({
+            data: {
+              storeId,
+              lotNo: item.lotNo || "",
+              counts: item.counts || "",
+              yarnType: item.yarnType || "",
+              color: item.recColor || item.issueColor || null,
+              stockKgs: item.recQty,
+              uom: item.uom,
+              rate: item.rate,
+              process: body.processType,
+            },
+          });
+        }
       }
-    }
+
+      // Update outward DC status if linked
+      if (body.outwardId) {
+        const outward = await tx.yarnProcessOutward.findUnique({
+          where: { id: body.outwardId },
+        });
+        if (outward) {
+          const totalReceived = await tx.yarnProcessInward.aggregate({
+            where: { outwardId: body.outwardId },
+            _sum: { totalQty: true },
+          });
+          const received = totalReceived._sum.totalQty || 0;
+          const newStatus = received >= outward.totalQty ? "Closed" : "Partial";
+          await tx.yarnProcessOutward.update({
+            where: { id: body.outwardId },
+            data: { status: newStatus },
+          });
+        }
+      }
+
+      return created;
+    });
 
     return NextResponse.json(inward, { status: 201 });
   } catch (error) {

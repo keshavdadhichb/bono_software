@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewFabric"); if (authCheck) return authCheck;
     const searchParams = request.nextUrl.searchParams;
     const processType = searchParams.get("processType");
     const status = searchParams.get("status");
@@ -42,6 +44,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditFabric"); if (authCheck) return authCheck;
     const body = await request.json();
 
     if (!body.partyId || !body.dcDate || !body.processType) {
@@ -148,34 +151,66 @@ export async function POST(request: NextRequest) {
     const roundOff = parseFloat(String(body.roundOff)) || 0;
     const netAmount = totalAmount + otherCharges + roundOff;
 
-    const outward = await db.fabricProcessOutward.create({
-      data: {
-        dcNo,
-        dcDate: new Date(body.dcDate),
-        processType: body.processType,
-        storeId: body.storeId || null,
-        partyId: body.partyId,
-        targetDate: body.targetDate ? new Date(body.targetDate) : null,
-        type: body.type || "Fresh",
-        narration: body.narration || null,
-        vehicleNo: body.vehicleNo || null,
-        transport: body.transport || null,
-        totalQty,
-        totalRolls,
-        programQty,
-        otherCharges,
-        totalAmount,
-        roundOff,
-        netAmount,
-        status: "Open",
-        stockItems: { create: stockItems },
-        programItems: { create: programItems },
-      },
-      include: {
-        stockItems: { orderBy: { slNo: "asc" } },
-        programItems: { orderBy: { slNo: "asc" } },
-        party: true,
-      },
+    const storeId = body.storeId || "default";
+
+    const outward = await db.$transaction(async (tx: any) => {
+      // Deduct from FabricStock for each stock item
+      for (const item of stockItems) {
+        if (item.weight <= 0) continue;
+        const stock = await tx.fabricStock.findFirst({
+          where: {
+            storeId,
+            lotNo: item.lotNo || "",
+            dia: item.dia || null,
+            clothDescription: item.clothDescription || null,
+            color: item.color || null,
+          },
+        });
+        if (stock) {
+          if (stock.weight < item.weight) {
+            throw new Error(`Insufficient fabric stock for ${item.clothDescription || ""} ${item.color || ""} (available: ${stock.weight} Kgs, requested: ${item.weight} Kgs)`);
+          }
+          await tx.fabricStock.update({
+            where: { id: stock.id },
+            data: {
+              weight: { decrement: item.weight },
+              rolls: { decrement: Math.min(item.rolls, stock.rolls) },
+            },
+          });
+        }
+      }
+
+      const created = await tx.fabricProcessOutward.create({
+        data: {
+          dcNo,
+          dcDate: new Date(body.dcDate),
+          processType: body.processType,
+          storeId: body.storeId || null,
+          partyId: body.partyId,
+          targetDate: body.targetDate ? new Date(body.targetDate) : null,
+          type: body.type || "Fresh",
+          narration: body.narration || null,
+          vehicleNo: body.vehicleNo || null,
+          transport: body.transport || null,
+          totalQty,
+          totalRolls,
+          programQty,
+          otherCharges,
+          totalAmount,
+          roundOff,
+          netAmount,
+          status: "Open",
+          stockItems: { create: stockItems },
+          programItems: { create: programItems },
+        },
+        include: {
+          stockItems: { orderBy: { slNo: "asc" } },
+          programItems: { orderBy: { slNo: "asc" } },
+          party: true,
+        },
+      });
+
+      return created;
     });
 
     return NextResponse.json(outward, { status: 201 });

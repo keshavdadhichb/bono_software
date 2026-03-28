@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewGarment"); if (authCheck) return authCheck;
     const searchParams = request.nextUrl.searchParams;
     const storeId = searchParams.get("storeId");
     const styleNo = searchParams.get("styleNo");
@@ -33,6 +35,34 @@ export async function GET(request: NextRequest) {
     console.error("Failed to fetch garment stock:", error);
     return Response.json(
       { error: "Failed to fetch garment stock" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const authCheck = await requirePermission("canEditGarment"); if (authCheck) return authCheck;
+    const body = await request.json();
+
+    if (!body.id) {
+      return Response.json({ error: "Stock ID is required" }, { status: 400 });
+    }
+
+    const updated = await db.garmentStock.update({
+      where: { id: body.id },
+      data: {
+        rate: body.rate !== undefined ? parseFloat(String(body.rate)) : undefined,
+        styleNo: body.styleNo || undefined,
+        size: body.size || undefined,
+      },
+    });
+
+    return Response.json(updated);
+  } catch (error) {
+    console.error("Failed to update garment stock:", error);
+    return Response.json(
+      { error: "Failed to update garment stock" },
       { status: 500 }
     );
   }

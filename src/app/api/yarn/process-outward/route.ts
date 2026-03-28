@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewYarn"); if (authCheck) return authCheck;
     const searchParams = request.nextUrl.searchParams;
     const processType = searchParams.get("processType");
     const status = searchParams.get("status");
@@ -38,6 +40,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditYarn"); if (authCheck) return authCheck;
     const body = await request.json();
 
     if (!body.partyId || !body.dcDate || !body.processType) {
@@ -110,30 +113,62 @@ export async function POST(request: NextRequest) {
     const roundOff = parseFloat(String(body.roundOff)) || 0;
     const netAmount = totalAmount + otherCharges + gstAmount + roundOff;
 
-    const outward = await db.yarnProcessOutward.create({
-      data: {
-        dcNo,
-        dcDate: new Date(body.dcDate),
-        processType: body.processType,
-        storeId: body.storeId || null,
-        partyId: body.partyId,
-        targetDate: body.targetDate ? new Date(body.targetDate) : null,
-        type: body.type || "Fresh",
-        narration: body.narration || null,
-        vehicleNo: body.vehicleNo || null,
-        transport: body.transport || null,
-        ourTeam: body.ourTeam || null,
-        totalQty,
-        totalBags,
-        otherCharges,
-        totalAmount,
-        gstAmount,
-        roundOff,
-        netAmount,
-        status: "Open",
-        items: { create: items },
-      },
-      include: { items: true, party: true },
+    const storeId = body.storeId || "default";
+
+    const outward = await db.$transaction(async (tx: any) => {
+      // Deduct from YarnStock for each item
+      for (const item of items) {
+        const stock = await tx.yarnStock.findFirst({
+          where: {
+            storeId,
+            lotNo: item.lotNo || "",
+            counts: item.counts || "",
+            yarnType: item.yarnType || "",
+            millName: item.millName || null,
+            color: item.color || null,
+          },
+        });
+        if (stock) {
+          if (stock.stockKgs < item.issueKgs) {
+            throw new Error(`Insufficient yarn stock for ${item.counts} ${item.yarnType} ${item.color || ""} (available: ${stock.stockKgs} Kgs, requested: ${item.issueKgs} Kgs)`);
+          }
+          await tx.yarnStock.update({
+            where: { id: stock.id },
+            data: {
+              stockKgs: { decrement: item.issueKgs },
+              noOfBags: { decrement: Math.min(item.noOfBags, stock.noOfBags) },
+            },
+          });
+        }
+      }
+
+      const created = await tx.yarnProcessOutward.create({
+        data: {
+          dcNo,
+          dcDate: new Date(body.dcDate),
+          processType: body.processType,
+          storeId: body.storeId || null,
+          partyId: body.partyId,
+          targetDate: body.targetDate ? new Date(body.targetDate) : null,
+          type: body.type || "Fresh",
+          narration: body.narration || null,
+          vehicleNo: body.vehicleNo || null,
+          transport: body.transport || null,
+          ourTeam: body.ourTeam || null,
+          totalQty,
+          totalBags,
+          otherCharges,
+          totalAmount,
+          gstAmount,
+          roundOff,
+          netAmount,
+          status: "Open",
+          items: { create: items },
+        },
+        include: { items: true, party: true },
+      });
+
+      return created;
     });
 
     return NextResponse.json(outward, { status: 201 });

@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
@@ -6,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheck = await requirePermission("canViewGarment"); if (authCheck) return authCheck;
     const { id } = await params;
     const outward = await db.garmentProcessOutward.findUnique({
       where: { id },
@@ -37,6 +39,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheckPut = await requirePermission("canEditGarment"); if (authCheckPut) return authCheckPut;
     const { id } = await params;
     const body = await request.json();
 
@@ -118,6 +121,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheckDel = await requirePermission("canDeleteGarment"); if (authCheckDel) return authCheckDel;
     const { id } = await params;
     await db.garmentProcessOutward.delete({ where: { id } });
     return Response.json({ message: "Garment process outward deleted successfully" });

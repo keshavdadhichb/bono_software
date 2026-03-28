@@ -1,7 +1,9 @@
+import { requirePermission } from "@/lib/api-auth"
 import { db } from "@/lib/db";
 
 export async function GET() {
   try {
+    const authCheck = await requirePermission("canViewAccessory"); if (authCheck) return authCheck;
     const stock = await db.accessoryStock.findMany({
       orderBy: { createdAt: "desc" },
     });

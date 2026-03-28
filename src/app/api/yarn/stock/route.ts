@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewYarn"); if (authCheck) return authCheck;
     const searchParams = request.nextUrl.searchParams;
     const storeId = searchParams.get("storeId");
     const lotNo = searchParams.get("lotNo");

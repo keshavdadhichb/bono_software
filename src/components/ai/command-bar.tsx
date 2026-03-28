@@ -101,6 +101,18 @@ export function AiCommandBar() {
         body: JSON.stringify({ message: trimmed, history }),
       })
 
+      if (!res.ok) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            content: "Something went wrong. Please try again.",
+          },
+        ])
+        return
+      }
+
       const data = await res.json()
 
       const assistantMsg: ChatMessage = {

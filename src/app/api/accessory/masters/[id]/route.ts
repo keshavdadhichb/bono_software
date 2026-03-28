@@ -1,3 +1,4 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
@@ -6,6 +7,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheckPut = await requirePermission("canEditAccessory"); if (authCheckPut) return authCheckPut;
     const { id } = await params;
     const body = await request.json();
     if (!body.accessoryName?.trim()) return Response.json({ error: "Name required" }, { status: 400 });
@@ -33,6 +35,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authCheckDel = await requirePermission("canDeleteAccessory"); if (authCheckDel) return authCheckDel;
     const { id } = await params;
     await db.accessoryMaster.delete({ where: { id } });
     return Response.json({ message: "Deleted" });

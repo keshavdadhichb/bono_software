@@ -170,6 +170,10 @@ export function SpotlightSearch() {
       setLoading(true)
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}`)
+        if (!res.ok) {
+          setResults({ pages: [], parties: [], stock: [] })
+          return
+        }
         const data = await res.json()
         setResults(data)
         setSelectedIndex(0)

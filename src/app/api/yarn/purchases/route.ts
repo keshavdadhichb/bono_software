@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewYarn"); if (authCheck) return authCheck;
     const { searchParams } = request.nextUrl;
     const search = searchParams.get("search") || "";
 
@@ -31,6 +33,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditYarn"); if (authCheck) return authCheck;
     const body = await request.json();
 
     if (!body.partyId) {
@@ -67,24 +70,69 @@ export async function POST(request: NextRequest) {
     const totalQty = items.reduce((s: number, i: any) => s + i.qty, 0);
     const totalAmount = items.reduce((s: number, i: any) => s + i.amount, 0);
 
-    const purchase = await db.yarnPurchase.create({
-      data: {
-        grnNo,
-        grnDate: new Date(body.grnDate || new Date()),
-        partyId: body.partyId,
-        storeId: body.storeId || null,
-        invoiceNo: body.invoiceNo || null,
-        invoiceDate: body.invoiceDate ? new Date(body.invoiceDate) : null,
-        narration: body.narration || null,
-        vehicleNo: body.vehicleNo || null,
-        totalQty,
-        totalAmount,
-        gstAmount: parseFloat(body.gstAmount) || 0,
-        otherCharges: parseFloat(body.otherCharges) || 0,
-        netAmount: totalAmount + (parseFloat(body.gstAmount) || 0) + (parseFloat(body.otherCharges) || 0),
-        items: { create: items },
-      },
-      include: { party: { select: { partyName: true } } },
+    const storeId = body.storeId || "default";
+
+    const purchase = await db.$transaction(async (tx: any) => {
+      const created = await tx.yarnPurchase.create({
+        data: {
+          grnNo,
+          grnDate: new Date(body.grnDate || new Date()),
+          partyId: body.partyId,
+          storeId: body.storeId || null,
+          invoiceNo: body.invoiceNo || null,
+          invoiceDate: body.invoiceDate ? new Date(body.invoiceDate) : null,
+          narration: body.narration || null,
+          vehicleNo: body.vehicleNo || null,
+          totalQty,
+          totalAmount,
+          gstAmount: parseFloat(body.gstAmount) || 0,
+          otherCharges: parseFloat(body.otherCharges) || 0,
+          netAmount: totalAmount + (parseFloat(body.gstAmount) || 0) + (parseFloat(body.otherCharges) || 0),
+          items: { create: items },
+        },
+        include: { party: { select: { partyName: true } } },
+      });
+
+      // Update YarnStock for each purchased item
+      for (const item of items) {
+        const existing = await tx.yarnStock.findFirst({
+          where: {
+            storeId,
+            lotNo: item.lotNo || "",
+            counts: item.counts,
+            yarnType: item.yarnType,
+            millName: item.millName || null,
+            color: item.color || null,
+          },
+        });
+        if (existing) {
+          await tx.yarnStock.update({
+            where: { id: existing.id },
+            data: {
+              stockKgs: { increment: item.qty },
+              noOfBags: { increment: item.noOfBags },
+              rate: item.rate,
+            },
+          });
+        } else {
+          await tx.yarnStock.create({
+            data: {
+              storeId,
+              lotNo: item.lotNo || "",
+              counts: item.counts,
+              yarnType: item.yarnType,
+              millName: item.millName || null,
+              color: item.color || null,
+              stockKgs: item.qty,
+              noOfBags: item.noOfBags,
+              uom: item.uom,
+              rate: item.rate,
+            },
+          });
+        }
+      }
+
+      return created;
     });
 
     return Response.json(purchase, { status: 201 });

@@ -4,6 +4,15 @@ import { db } from "@/lib/db"
 
 export async function POST() {
   try {
+    // Only allow seeding if no users exist (first-time setup)
+    const userCount = await db.user.count()
+    if (userCount > 0) {
+      return NextResponse.json(
+        { error: "Seed is only allowed during first-time setup when no users exist" },
+        { status: 403 }
+      )
+    }
+
     const results: Record<string, unknown> = {}
 
     // 1. Default admin user

@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canViewFabric"); if (authCheck) return authCheck;
     const searchParams = request.nextUrl.searchParams;
     const processType = searchParams.get("processType");
     const partyId = searchParams.get("partyId");
@@ -39,6 +41,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditFabric"); if (authCheck) return authCheck;
     const body = await request.json();
 
     if (!body.partyId || !body.dcDate || !body.processType) {
@@ -105,56 +108,99 @@ export async function POST(request: NextRequest) {
     const roundOff = parseFloat(String(body.roundOff)) || 0;
     const netAmount = totalAmount + otherCharges + gstAmount + roundOff;
 
-    const inward = await db.fabricProcessInward.create({
-      data: {
-        dcNo,
-        dcDate: new Date(body.dcDate),
-        processType: body.processType,
-        storeId: body.storeId || null,
-        partyId: body.partyId,
-        pdcNo: body.pdcNo || null,
-        pdcDate: body.pdcDate ? new Date(body.pdcDate) : null,
-        narration: body.narration || null,
-        vehicleNo: body.vehicleNo || null,
-        transport: body.transport || null,
-        totalQty,
-        totalRolls,
-        otherCharges,
-        totalAmount,
-        gstAmount,
-        roundOff,
-        netAmount,
-        items: { create: items },
-      },
-      include: {
-        items: { orderBy: { slNo: "asc" } },
-        party: true,
-      },
-    });
+    const storeId = body.storeId || "default";
 
-    // If there's a linked outward DC (pdcNo), update its status
-    if (body.pdcNo) {
-      const outward = await db.fabricProcessOutward.findUnique({
-        where: { dcNo: body.pdcNo },
+    const inward = await db.$transaction(async (tx: any) => {
+      const created = await tx.fabricProcessInward.create({
+        data: {
+          dcNo,
+          dcDate: new Date(body.dcDate),
+          processType: body.processType,
+          storeId: body.storeId || null,
+          partyId: body.partyId,
+          pdcNo: body.pdcNo || null,
+          pdcDate: body.pdcDate ? new Date(body.pdcDate) : null,
+          narration: body.narration || null,
+          vehicleNo: body.vehicleNo || null,
+          transport: body.transport || null,
+          totalQty,
+          totalRolls,
+          otherCharges,
+          totalAmount,
+          gstAmount,
+          roundOff,
+          netAmount,
+          items: { create: items },
+        },
+        include: {
+          items: { orderBy: { slNo: "asc" } },
+          party: true,
+        },
       });
-      if (outward) {
-        // Check total received weight against outward
-        const allInwards = await db.fabricProcessInward.findMany({
-          where: { pdcNo: body.pdcNo },
-          select: { totalQty: true },
+
+      // Add received fabric to stock
+      for (const item of items) {
+        if (item.weight <= 0) continue;
+        const existing = await tx.fabricStock.findFirst({
+          where: {
+            storeId,
+            lotNo: item.lotNo || "",
+            dia: item.dia || null,
+            clothDescription: item.clothDescription || null,
+            color: item.color || null,
+          },
         });
-        const totalReceived = allInwards.reduce(
-          (sum, inv) => sum + (inv.totalQty || 0),
-          0
-        );
-        const newStatus =
-          totalReceived >= outward.totalQty ? "Closed" : "Partial";
-        await db.fabricProcessOutward.update({
-          where: { id: outward.id },
-          data: { status: newStatus },
-        });
+        if (existing) {
+          await tx.fabricStock.update({
+            where: { id: existing.id },
+            data: {
+              weight: { increment: item.weight },
+              rolls: { increment: item.rolls },
+              process: body.processType,
+            },
+          });
+        } else {
+          await tx.fabricStock.create({
+            data: {
+              storeId,
+              lotNo: item.lotNo || "",
+              dia: item.dia || null,
+              clothDescription: item.clothDescription || null,
+              color: item.color || null,
+              weight: item.weight,
+              rolls: item.rolls,
+              uom: item.uom,
+              rate: item.rate,
+              process: body.processType,
+            },
+          });
+        }
       }
-    }
+
+      // If there's a linked outward DC (pdcNo), update its status
+      if (body.pdcNo) {
+        const outward = await tx.fabricProcessOutward.findUnique({
+          where: { dcNo: body.pdcNo },
+        });
+        if (outward) {
+          const allInwards = await tx.fabricProcessInward.findMany({
+            where: { pdcNo: body.pdcNo },
+            select: { totalQty: true },
+          });
+          const totalReceived = allInwards.reduce(
+            (sum: number, inv: any) => sum + (inv.totalQty || 0),
+            0
+          );
+          const newStatus = totalReceived >= outward.totalQty ? "Closed" : "Partial";
+          await tx.fabricProcessOutward.update({
+            where: { id: outward.id },
+            data: { status: newStatus },
+          });
+        }
+      }
+
+      return created;
+    });
 
     return NextResponse.json(inward, { status: 201 });
   } catch (error) {

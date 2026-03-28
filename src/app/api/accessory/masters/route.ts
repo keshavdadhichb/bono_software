@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET() {
   try {
+    const authCheck = await requirePermission("canViewAccessory"); if (authCheck) return authCheck;
     const masters = await db.accessoryMaster.findMany({
       orderBy: { accessoryName: "asc" },
       include: { group: { select: { groupName: true } } },
@@ -16,6 +18,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditAccessory"); if (authCheck) return authCheck;
     const body = await request.json();
     if (!body.accessoryName?.trim()) return Response.json({ error: "Accessory Name is required" }, { status: 400 });
     if (!body.groupId) return Response.json({ error: "Group is required" }, { status: 400 });

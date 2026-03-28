@@ -1,8 +1,10 @@
+import { requirePermission } from "@/lib/api-auth"
 import { type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET() {
   try {
+    const authCheck = await requirePermission("canViewMaster"); if (authCheck) return authCheck;
     const counts = await db.yarnCount.findMany({ orderBy: { countName: "asc" } });
     return Response.json(counts);
   } catch (error) {
@@ -13,6 +15,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await requirePermission("canEditMaster"); if (authCheck) return authCheck;
     const body = await request.json();
     if (!body.countName?.trim()) {
       return Response.json({ error: "Count Name is required" }, { status: 400 });
