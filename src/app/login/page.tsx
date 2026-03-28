@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
@@ -92,6 +91,7 @@ function FloatingParticles() {
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   const {
     register,
@@ -99,56 +99,63 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormValues>();
 
+  // Check URL for error from NextAuth redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error")) {
+      setLoginError("Invalid username or password");
+    }
+  }, []);
+
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
+    setLoginError("");
 
     try {
-      const result = await signIn("credentials", {
-        username: data.username,
-        password: data.password,
-        redirect: false,
+      // Step 1: Get CSRF token
+      const csrfRes = await fetch("/api/auth/csrf");
+      const { csrfToken } = await csrfRes.json();
+
+      // Step 2: POST credentials directly
+      const res = await fetch("/api/auth/callback/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          csrfToken,
+          username: data.username,
+          password: data.password,
+          json: "true",
+        }),
+        redirect: "follow",
       });
 
-      if (result?.error) {
-        toast.error("Invalid username or password");
-        setIsLoading(false);
-      } else if (result?.ok) {
+      // Step 3: Check if session was created
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
+
+      if (session?.user) {
         toast.success("Signed in successfully");
         window.location.href = "/dashboard";
       } else {
-        await signIn("credentials", {
-          username: data.username,
-          password: data.password,
-          redirectTo: "/dashboard",
-        });
-      }
-    } catch {
-      try {
-        await signIn("credentials", {
-          username: data.username,
-          password: data.password,
-          redirectTo: "/dashboard",
-        });
-      } catch {
-        toast.error("Something went wrong. Please try again.");
+        setLoginError("Invalid username or password");
         setIsLoading(false);
       }
+    } catch {
+      setLoginError("Something went wrong. Please try again.");
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen">
-      {/* ───── Left Brand Panel ───── */}
+      {/* Left Brand Panel */}
       <div className="hidden lg:flex lg:w-[52%] relative flex-col justify-between bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 text-white p-12 overflow-hidden">
-        {/* Subtle grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px]" />
-        {/* Radial glow */}
         <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[120px]" />
         <div className="absolute bottom-1/4 right-0 w-[400px] h-[400px] rounded-full bg-blue-500/10 blur-[100px]" />
 
         <FloatingParticles />
 
-        {/* Top: Brand */}
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center text-lg font-bold tracking-tight">
@@ -160,7 +167,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Center: Headline + Features */}
         <div className="relative z-10 -mt-8">
           <h1 className="text-4xl font-bold leading-tight tracking-tight mb-2">
             BONOSTYLE
@@ -190,7 +196,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Bottom: Footer */}
         <div className="relative z-10 flex items-center justify-between">
           <p className="text-xs text-white/30">
             Tirupur, Tamil Nadu, India
@@ -202,12 +207,10 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ───── Right Login Panel ───── */}
+      {/* Right Login Panel */}
       <div className="flex flex-1 flex-col items-center justify-center relative bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/60 px-6 py-12">
-        {/* Dot pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_0.8px,transparent_0.8px)] [background-size:24px_24px] opacity-30" />
 
-        {/* Mobile brand header — visible below lg */}
         <div className="lg:hidden relative z-10 text-center mb-10">
           <div className="inline-flex items-center gap-2.5 mb-4">
             <div className="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm font-bold">
@@ -224,7 +227,6 @@ export default function LoginPage() {
             Garment Manufacturing ERP
           </p>
 
-          {/* Mobile feature chips */}
           <div className="flex flex-wrap justify-center gap-2 mt-5">
             {features.map((f) => (
               <span
@@ -238,7 +240,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Login Card */}
         <Card className="relative z-10 w-full max-w-[420px] shadow-xl shadow-slate-200/50 border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="space-y-1.5 text-center pb-2 pt-8 px-8">
             <CardTitle className="text-xl font-semibold tracking-tight text-slate-900">
@@ -250,6 +251,11 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent className="pt-4 pb-8 px-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {loginError && (
+                <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-[13px] text-red-700">
+                  {loginError}
+                </div>
+              )}
               <div className="space-y-1.5">
                 <Label htmlFor="username" className="text-[13px] text-slate-700">
                   Username
@@ -315,7 +321,6 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            {/* Powered by AI badge — mobile & desktop */}
             <div className="mt-6 flex justify-center lg:hidden">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-[11px] text-indigo-600 font-medium">
                 <Sparkles className="h-3 w-3" />
@@ -325,7 +330,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        {/* Bottom text */}
         <p className="relative z-10 mt-8 text-[11px] text-slate-400 text-center">
           &copy; {new Date().getFullYear()} BonoStyle Creations LLP. All rights reserved.
         </p>
