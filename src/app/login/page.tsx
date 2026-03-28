@@ -111,14 +111,28 @@ export default function LoginPage() {
 
       if (result?.error) {
         toast.error("Invalid username or password");
-      } else {
+        setIsLoading(false);
+      } else if (result?.ok) {
         toast.success("Signed in successfully");
         window.location.href = "/dashboard";
+      } else {
+        await signIn("credentials", {
+          username: data.username,
+          password: data.password,
+          redirectTo: "/dashboard",
+        });
       }
     } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+      try {
+        await signIn("credentials", {
+          username: data.username,
+          password: data.password,
+          redirectTo: "/dashboard",
+        });
+      } catch {
+        toast.error("Something went wrong. Please try again.");
+        setIsLoading(false);
+      }
     }
   };
 
